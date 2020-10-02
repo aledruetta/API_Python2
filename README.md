@@ -17,6 +17,7 @@ C:\<pasta do projeto>> venv\Scripts\activate
 C:\<pasta do projeto>> deactivate
 ## Módulos
 https://pypi.org/project/pip/
+
 C:\> pip install flask
 ## Flask
 https://flask.palletsprojects.com/en/1.1.x/

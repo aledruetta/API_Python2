@@ -1,1 +1,4 @@
-projeto01/__pycache__/main.cpython-38.pyc
+venv/
+.vscode/
+__pycache__/
+*.sw[pon]

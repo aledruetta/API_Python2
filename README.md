@@ -1,4 +1,4 @@
-# API_Python2 
+# API_Python
 ## Instalação
 https://www.python.org/
 ## Documentação
@@ -19,6 +19,12 @@ C:\<pasta do projeto>> deactivate
 https://pypi.org/project/pip/
 
 C:\> pip install flask
+
+C:\> pip install fontawesome
+
+C:\> pip install flask-bootstrap
+
+
 ## Flask
 https://flask.palletsprojects.com/en/1.1.x/
 ### LINUX

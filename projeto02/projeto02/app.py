@@ -12,7 +12,16 @@ def create_app():
     # listar estacoes
     @app.route("/api")
     def list():
-        pass
+        with sqlite3.connect("test.db") as conn:
+            cur = conn.cursor()
+            qry = """
+                SELECT * FROM estacao
+            """
+            cur.execute(qry)
+            data = cur.fetchall()
+            conn.commit()
+
+        return {"estacoes": data}
 
     # pedindo dados do sensor que estao no banco de dados
     @app.route("/api/<int:id>")

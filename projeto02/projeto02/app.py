@@ -75,8 +75,17 @@ def create_app():
         return {"msg": "Success!"}
 
     # deletar dados no banco de dados
-    @app.route("/api/<int:id>", methods=["DELETE"])
+    @app.route("/api/<int:id>/del", methods=["POST"])
     def delete(id):
-        pass
+        with sqlite3.connect("test.db") as conn:
+            cur = conn.cursor()
+            qry = """
+                    DELETE FROM estacao
+                    WHERE id = ?
+            """
+            cur.execute(qry, str(id))
+            conn.commit()
+
+        return {"msg": "Success!"}
 
     return app

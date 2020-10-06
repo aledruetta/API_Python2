@@ -26,7 +26,17 @@ def create_app():
     # pedindo dados do sensor que estao no banco de dados
     @app.route("/api/<int:id>")
     def read(id):
-        pass
+        with sqlite3.connect("test.db") as conn:
+            cur = conn.cursor()
+            qry = """
+                SELECT * FROM estacao
+                WHERE id = ?
+            """
+            cur.execute(qry, str(id))
+            data = cur.fetchone()
+            conn.commit()
+
+        return {"estacao": data}
 
     # criar estacao no banco de dados
     @app.route("/api", methods=["POST"])
@@ -48,7 +58,21 @@ def create_app():
     # enviando dados para serem salvos
     @app.route("/api/<int:id>", methods=["POST"])
     def update(id):
-        pass
+        data = request.get_json()
+
+        with sqlite3.connect("test.db") as conn:
+            cur = conn.cursor()
+            qry = """
+                    UPDATE estacao SET local = ?, latitude = ?, longitude = ?
+                    WHERE id = ?
+            """
+            cur.execute(
+                qry,
+                (data['local'], data['latitude'], data['longitude'], str(id)),
+            )
+            conn.commit()
+
+        return {"msg": "Success!"}
 
     # deletar dados no banco de dados
     @app.route("/api/<int:id>", methods=["DELETE"])

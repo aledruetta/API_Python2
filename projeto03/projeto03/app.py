@@ -1,20 +1,21 @@
-from flask import Flask, render_template, request
-from flask_sqlalchemy import SQLAlchemy
 import sqlite3
 
+from flask import Flask, render_template, request
+from flask_sqlalchemy import SQLAlchemy
+
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///test.db'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///test.db"
+app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 db = SQLAlchemy(app)
 
 
 class Estacao(db.Model):
     __tablename__ = "estacao"
 
-    id = db.Column(db.Integer, primary_key=True)
-    local = db.Column(db.String(255), nullable=False)
-    latitude = db.Column(db.String(255), nullable=False)
-    longitude = db.Column(db.String(255), nullable=False)
+    id = db.Column("id", db.Integer, primary_key=True)
+    local = db.Column("local", db.String(255), nullable=False)
+    latitude = db.Column("latitude", db.String(255), nullable=False)
+    longitude = db.Column("longitude", db.String(255), nullable=False)
 
     def __repr__(self):
         return f"{self.local} [{self.latitude}, {self.longitude}]"
@@ -23,13 +24,15 @@ class Estacao(db.Model):
 class Sensor(db.Model):
     __tablename__ = "sensor"
 
-    id = db.Column(db.Integer, primary_key=True)
-    tipo = db.Column(db.String(255), nullable=False)
+    id = db.Column("id", db.Integer, primary_key=True)
+    tipo = db.Column("tipo", db.String(255), nullable=False)
 
     estacao_id = db.Column(
-        db.Integer, db.ForeignKey('estacao.id'), nullable=False)
+        "estacao_id", db.Integer, db.ForeignKey("estacao.id"), nullable=False
+    )
     estacao = db.relationship(
-        'Estacao', backref=db.backref('sensores', lazy=True))
+        "Estacao", backref=db.backref("sensores", lazy=True)
+    )
 
     def __repr__(self):
         return f"{self.tipo}"
@@ -76,7 +79,12 @@ def read(id):
 def create():
     data = request.get_json()
 
-    estacao = Estacao(data['local'], data['latitude'], data['longitude'])
+    estacao = Estacao(
+        local=data["local"],
+        latitude=data["latitude"],
+        longitude=data["longitude"],
+    )
+
     db.session.add(estacao)
     db.session.commit()
 
@@ -91,12 +99,12 @@ def update(id):
     with sqlite3.connect("test.db") as conn:
         cur = conn.cursor()
         qry = """
-                UPDATE estacao SET local = ?, latitude = ?, longitude = ?
-                WHERE id = ?
+            UPDATE estacao SET local = ?, latitude = ?, longitude = ?
+            WHERE id = ?
         """
         cur.execute(
             qry,
-            (data['local'], data['latitude'], data['longitude'], str(id)),
+            (data["local"], data["latitude"], data["longitude"], str(id)),
         )
         conn.commit()
 
@@ -109,8 +117,8 @@ def delete(id):
     with sqlite3.connect("test.db") as conn:
         cur = conn.cursor()
         qry = """
-                DELETE FROM estacao
-                WHERE id = ?
+            DELETE FROM estacao
+            WHERE id = ?
         """
         cur.execute(qry, str(id))
         conn.commit()

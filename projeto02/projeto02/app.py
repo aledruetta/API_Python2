@@ -32,7 +32,7 @@ def create_app():
                 SELECT * FROM estacao
                 WHERE id = ?
             """
-            cur.execute(qry, str(id))
+            cur.execute(qry, (str(id),))
             data = cur.fetchone()
             conn.commit()
 

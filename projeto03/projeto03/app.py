@@ -1,5 +1,3 @@
-import sqlite3
-
 from flask import Flask, render_template, request
 from flask_sqlalchemy import SQLAlchemy
 
@@ -16,6 +14,13 @@ class Estacao(db.Model):
     local = db.Column("local", db.String(255), nullable=False)
     latitude = db.Column("latitude", db.String(255), nullable=False)
     longitude = db.Column("longitude", db.String(255), nullable=False)
+
+    def json(self):
+        return {
+            "local": self.local,
+            "latitude": self.latitude,
+            "longitude": self.longitude
+        }
 
     def __repr__(self):
         return f"{self.local} [{self.latitude}, {self.longitude}]"
@@ -46,32 +51,16 @@ def index():
 # listar estacoes
 @app.route("/api")
 def list():
-    with sqlite3.connect("test.db") as conn:
-        cur = conn.cursor()
-        qry = """
-            SELECT * FROM estacao
-        """
-        cur.execute(qry)
-        data = cur.fetchall()
-        conn.commit()
-
+    estacoes = Estacao.query.all()
+    data = [estacao.json() for estacao in estacoes]
     return {"estacoes": data}
 
 
 # pedindo dados do sensor que estao no banco de dados
 @app.route("/api/<int:id>")
 def read(id):
-    with sqlite3.connect("test.db") as conn:
-        cur = conn.cursor()
-        qry = """
-            SELECT * FROM estacao
-            WHERE id = ?
-        """
-        cur.execute(qry, (str(id),))
-        data = cur.fetchone()
-        conn.commit()
-
-    return {"estacao": data}
+    estacao = Estacao.query.get(id)
+    return {"estacao": estacao.json()}
 
 
 # criar estacao no banco de dados
@@ -95,32 +84,24 @@ def create():
 @app.route("/api/<int:id>", methods=["POST"])
 def update(id):
     data = request.get_json()
+    estacao = Estacao.query.get(id)
 
-    with sqlite3.connect("test.db") as conn:
-        cur = conn.cursor()
-        qry = """
-            UPDATE estacao SET local = ?, latitude = ?, longitude = ?
-            WHERE id = ?
-        """
-        cur.execute(
-            qry,
-            (data["local"], data["latitude"], data["longitude"], str(id)),
-        )
-        conn.commit()
+    estacao.local = data.get("local", estacao.local)
+    estacao.latitude = data.get("latitude", estacao.latitude)
+    estacao.longitude = data.get("longitude", estacao.longitude)
 
-    return {"msg": "Success!"}
+    db.session.add(estacao)
+    db.session.commit()
+
+    return {"msg": estacao.json()}
 
 
 # deletar dados no banco de dados
 @app.route("/api/<int:id>/del", methods=["POST"])
 def delete(id):
-    with sqlite3.connect("test.db") as conn:
-        cur = conn.cursor()
-        qry = """
-            DELETE FROM estacao
-            WHERE id = ?
-        """
-        cur.execute(qry, str(id))
-        conn.commit()
+    estacao = Estacao.query.get(id)
+
+    db.session.delete(estacao)
+    db.session.commit()
 
     return {"msg": "Success!"}

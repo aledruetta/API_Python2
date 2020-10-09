@@ -1,5 +1,5 @@
 from flask import Blueprint, request, render_template
-from projeto04.ext.db import db
+from projeto.ext.db import db
 from .models import Estacao
 
 bp = Blueprint("api", __name__)

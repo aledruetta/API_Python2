@@ -1,4 +1,4 @@
-from projeto04.ext.db import db
+from projeto.ext.db import db
 
 
 class Estacao(db.Model):

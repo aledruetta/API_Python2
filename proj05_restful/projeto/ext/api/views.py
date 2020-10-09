@@ -1,20 +1,27 @@
 from flask import Blueprint, request
-from flask_restful import Resource
+from flask_restful import Resource, reqparse
 
 from projeto.ext.db import db
 from .models import Estacao
 
 bp = Blueprint("api", __name__)
 
-
 class ApiRest(Resource):
     def get(self):
         estacoes = Estacao.query.all()
         data = [estacao.json() for estacao in estacoes]
-        return {"estacoes": data}
+        return {"resources": data}
 
     def post(self):
-        data = request.get_json()
+        parser = reqparse.RequestParser()
+        parser.add_argument(
+            'local', type=str, required=True, help="Argumento requerido!")
+        parser.add_argument(
+            'latitude', type=str, required=True, help="Argumento requerido!")
+        parser.add_argument(
+            'longitude', type=str, required=True, help="Argumento requerido!")
+
+        data = parser.parse_args()
 
         estacao = Estacao(
             local=data["local"],
@@ -25,31 +32,43 @@ class ApiRest(Resource):
         db.session.add(estacao)
         db.session.commit()
 
-        return {"msg": "Success!"}
+        return {"created": estacao.json()}
 
 
 class ApiRestId(Resource):
     def get(self, id):
         estacao = Estacao.query.get(id)
-        return {"estacao": estacao.json()}
+
+        if estacao:
+            return {"resource": estacao.json()}
+        return {"error": "Recurso inexistente!"}
 
     def put(self, id):
-        data = request.get_json()
+        parser = reqparse.RequestParser()
+        parser.add_argument('local', type=str)
+        parser.add_argument('latitude', type=str)
+        parser.add_argument('longitude', type=str)
+
+        data = parser.parse_args()
         estacao = Estacao.query.get(id)
 
-        estacao.local = data.get("local", estacao.local)
-        estacao.latitude = data.get("latitude", estacao.latitude)
-        estacao.longitude = data.get("longitude", estacao.longitude)
+        if estacao:
+            estacao.local = data["local"] if data["local"] else estacao.local
+            estacao.latitude = data["latitude"] if data["latitude"] else estacao.latitude
+            estacao.longitude = data["longitude"] if data["longitude"] else estacao.longitude
 
-        db.session.add(estacao)
-        db.session.commit()
+            db.session.add(estacao)
+            db.session.commit()
 
-        return {"msg": estacao.json()}
+            return {"updated": estacao.json()}
+        return {"error": "Recurso inexistente!"}
 
     def delete(self, id):
         estacao = Estacao.query.get(id)
 
-        db.session.delete(estacao)
-        db.session.commit()
+        if estacao:
+            db.session.delete(estacao)
+            db.session.commit()
 
-        return {"msg": "Success!"}
+            return {"deleted": estacao.json()}
+        return {"error": "Recurso inexistente!"}

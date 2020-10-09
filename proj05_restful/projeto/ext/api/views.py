@@ -11,7 +11,7 @@ class ApiRest(Resource):
     def get(self):
         estacoes = Estacao.query.all()
         data = [estacao.json() for estacao in estacoes]
-        return {"estacoes": data}
+        return {"resources": data}
 
     def post(self):
         data = request.get_json()
@@ -25,31 +25,38 @@ class ApiRest(Resource):
         db.session.add(estacao)
         db.session.commit()
 
-        return {"msg": "Success!"}
+        return {"created": estacao.json()}
 
 
 class ApiRestId(Resource):
     def get(self, id):
         estacao = Estacao.query.get(id)
-        return {"estacao": estacao.json()}
+
+        if estacao:
+            return {"resource": estacao.json()}
+        return {"error": "Recurso inexistente!"}
 
     def put(self, id):
         data = request.get_json()
         estacao = Estacao.query.get(id)
 
-        estacao.local = data.get("local", estacao.local)
-        estacao.latitude = data.get("latitude", estacao.latitude)
-        estacao.longitude = data.get("longitude", estacao.longitude)
+        if estacao:
+            estacao.local = data.get("local", estacao.local)
+            estacao.latitude = data.get("latitude", estacao.latitude)
+            estacao.longitude = data.get("longitude", estacao.longitude)
 
-        db.session.add(estacao)
-        db.session.commit()
+            db.session.add(estacao)
+            db.session.commit()
 
-        return {"msg": estacao.json()}
+            return {"updated": estacao.json()}
+        return {"error": "Recurso inexistente!"}
 
     def delete(self, id):
         estacao = Estacao.query.get(id)
 
-        db.session.delete(estacao)
-        db.session.commit()
+        if estacao:
+            db.session.delete(estacao)
+            db.session.commit()
 
-        return {"msg": "Success!"}
+            return {"deleted": estacao.json()}
+        return {"error": "Recurso inexistente!"}

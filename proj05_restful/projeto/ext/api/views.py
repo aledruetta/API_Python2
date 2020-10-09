@@ -1,11 +1,10 @@
 from flask import Blueprint, request
-from flask_restful import Resource
+from flask_restful import Resource, reqparse
 
 from projeto.ext.db import db
 from .models import Estacao
 
 bp = Blueprint("api", __name__)
-
 
 class ApiRest(Resource):
     def get(self):
@@ -14,7 +13,15 @@ class ApiRest(Resource):
         return {"resources": data}
 
     def post(self):
-        data = request.get_json()
+        parser = reqparse.RequestParser()
+        parser.add_argument(
+            'local', type=str, required=True, help="Argumento requerido!")
+        parser.add_argument(
+            'latitude', type=str, required=True, help="Argumento requerido!")
+        parser.add_argument(
+            'longitude', type=str, required=True, help="Argumento requerido!")
+
+        data = parser.parse_args()
 
         estacao = Estacao(
             local=data["local"],
@@ -37,13 +44,18 @@ class ApiRestId(Resource):
         return {"error": "Recurso inexistente!"}
 
     def put(self, id):
-        data = request.get_json()
+        parser = reqparse.RequestParser()
+        parser.add_argument('local', type=str)
+        parser.add_argument('latitude', type=str)
+        parser.add_argument('longitude', type=str)
+
+        data = parser.parse_args()
         estacao = Estacao.query.get(id)
 
         if estacao:
-            estacao.local = data.get("local", estacao.local)
-            estacao.latitude = data.get("latitude", estacao.latitude)
-            estacao.longitude = data.get("longitude", estacao.longitude)
+            estacao.local = data["local"] if data["local"] else estacao.local
+            estacao.latitude = data["latitude"] if data["latitude"] else estacao.latitude
+            estacao.longitude = data["longitude"] if data["longitude"] else estacao.longitude
 
             db.session.add(estacao)
             db.session.commit()

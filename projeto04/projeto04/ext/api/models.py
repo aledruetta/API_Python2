@@ -11,6 +11,7 @@ class Estacao(db.Model):
 
     def json(self):
         return {
+            "id": self.id,
             "local": self.local,
             "latitude": self.latitude,
             "longitude": self.longitude

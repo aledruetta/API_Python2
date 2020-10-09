@@ -18,14 +18,14 @@ def list():
     return {"estacoes": data}
 
 
-# pedindo dados do sensor que estao no banco de dados
+# apresentar uma estacao pelo id
 @bp.route("/api/<int:id>")
 def read(id):
     estacao = Estacao.query.get(id)
     return {"estacao": estacao.json()}
 
 
-# criar estacao no banco de dados
+# criar estacao
 @bp.route("/api", methods=["POST"])
 def create():
     data = request.get_json()
@@ -42,7 +42,7 @@ def create():
     return {"msg": "Success!"}
 
 
-# enviando dados para serem salvos
+# atualizar dados estacao pelo id
 @bp.route("/api/<int:id>", methods=["POST"])
 def update(id):
     data = request.get_json()
@@ -58,7 +58,7 @@ def update(id):
     return {"msg": estacao.json()}
 
 
-# deletar dados no banco de dados
+# deletar estacao pelo id
 @bp.route("/api/<int:id>/del", methods=["POST"])
 def delete(id):
     estacao = Estacao.query.get(id)

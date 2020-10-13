@@ -15,6 +15,7 @@ class ApiRest(Resource):
         data = [estacao.json() for estacao in estacoes]
         return {"resources": data}
 
+    @jwt_required()
     def post(self):
         parser = reqparse.RequestParser()
         parser.add_argument(
@@ -49,6 +50,7 @@ class ApiRestId(Resource):
             return {"resource": estacao.json()}
         return {"error": "Recurso inexistente!"}
 
+    @jwt_required()
     def put(self, id):
         parser = reqparse.RequestParser()
         parser.add_argument("local", type=str)
@@ -59,6 +61,7 @@ class ApiRestId(Resource):
         estacao = Estacao.query.get(id)
 
         if estacao:
+            print(data)
             estacao.local = data["local"] if data["local"] else estacao.local
             estacao.latitude = (
                 data["latitude"] if data["latitude"] else estacao.latitude

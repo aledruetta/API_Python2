@@ -1,6 +1,6 @@
 from werkzeug.security import safe_str_cmp
 
-from projeto.ext.api.models import User
+from .models import User
 
 
 def authenticate(email, password):

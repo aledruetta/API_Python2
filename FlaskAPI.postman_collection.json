@@ -6,19 +6,30 @@
 	},
 	"item": [
 		{
-			"name": "/api",
+			"name": "/api/v1.1",
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {}
+			},
 			"request": {
+				"auth": {
+					"type": "noauth"
+				},
 				"method": "POST",
 				"header": [
 					{
 						"key": "Content-Type",
 						"type": "text",
 						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "jwt {{access_token}}",
+						"type": "text"
 					}
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n\t\"local\": \"Ubatuba\",\n\t\"latitude\": \"123.0000\",\n    \"longitude\": \"234.9999\"\n}",
+					"raw": "{\n    \"local\": \"Cunha\",\n\t\"latitude\": \"140.11700\",\n    \"longitude\": \"201.0955\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -26,52 +37,49 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:5000/api",
-					"protocol": "http",
+					"raw": "{{url}}/api/v1.1",
 					"host": [
-						"localhost"
+						"{{url}}"
 					],
-					"port": "5000",
-					"path": [
-						"api"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "/api",
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "http://localhost:5000/api",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "5000",
-					"path": [
-						"api"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "/api/id",
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "http://localhost:5000/api/1",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "5000",
 					"path": [
 						"api",
+						"v1.1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/api/v1.1",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/api/v1.1",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"api",
+						"v1.1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/api/v1.1/id",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/api/v1.1/1",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"api",
+						"v1.1",
 						"1"
 					]
 				}
@@ -79,13 +87,24 @@
 			"response": []
 		},
 		{
-			"name": "/api/id",
+			"name": "/api/v1.1/id",
 			"request": {
-				"method": "POST",
-				"header": [],
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Authorization",
+						"value": "jwt {{access_token}}",
+						"type": "text"
+					}
+				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n\t\"local\": \"Pindamonhangaba\"\n}",
+					"raw": "{\n\t\"local\": \"Taubate\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -93,36 +112,93 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:5000/api/1",
-					"protocol": "http",
+					"raw": "{{url}}/api/v1.1/3",
 					"host": [
-						"localhost"
+						"{{url}}"
 					],
-					"port": "5000",
 					"path": [
 						"api",
-						"1"
+						"v1.1",
+						"3"
 					]
 				}
 			},
 			"response": []
 		},
 		{
-			"name": "/api/id",
+			"name": "/api/v1.1/id",
 			"request": {
-				"method": "POST",
-				"header": [],
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Authorization",
+						"value": "jwt {{access_token}}",
+						"type": "text"
+					}
+				],
 				"url": {
-					"raw": "http://localhost:5000/api/1/del",
-					"protocol": "http",
+					"raw": "{{url}}/api/v1.1/2",
 					"host": [
-						"localhost"
+						"{{url}}"
 					],
-					"port": "5000",
 					"path": [
 						"api",
-						"1",
-						"del"
+						"v1.1",
+						"2"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/auth",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "5f78fdb9-1d8c-41df-99d0-d996ffab2b88",
+						"exec": [
+							"const response = pm.response.json()",
+							"",
+							"pm.environment.set(\"access_token\", response.access_token);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"email\": \"alvaro@gmail.com\",\n    \"password\": \"123456\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}/auth",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"auth"
 					]
 				}
 			},

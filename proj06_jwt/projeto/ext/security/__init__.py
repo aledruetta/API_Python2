@@ -1,6 +1,7 @@
+from flask_jwt import JWT
 from werkzeug.security import safe_str_cmp
 
-from projeto.ext.api.models import User
+from .models import User
 
 
 def authenticate(email, password):
@@ -15,3 +16,7 @@ def authenticate(email, password):
 def identity(payload):
     user_id = payload["identity"]
     return User.query.get(user_id)
+
+
+def init_app(app):
+    jwt = JWT(app, authenticate, identity)

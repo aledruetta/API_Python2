@@ -1,8 +1,6 @@
 from flask import Flask
-from flask_jwt import JWT
 
-from projeto.ext import api, db
-from projeto.ext.security import authenticate, identity
+from .ext import api, db, security
 
 
 def create_app():
@@ -15,7 +13,6 @@ def create_app():
 
     db.init_app(app)
     api.init_app(app)
-
-    jwt = JWT(app, authenticate, identity)
+    security.init_app(app)
 
     return app

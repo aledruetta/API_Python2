@@ -1,12 +1,9 @@
-from flask import Blueprint, request
 from flask_jwt import current_identity, jwt_required
 from flask_restful import Resource, reqparse
 
 from projeto.ext.db import db
 
 from .models import Estacao
-
-bp = Blueprint("api", __name__)
 
 
 class ApiRest(Resource):
@@ -61,7 +58,6 @@ class ApiRestId(Resource):
         estacao = Estacao.query.get(id)
 
         if estacao:
-            print(data)
             estacao.local = data["local"] if data["local"] else estacao.local
             estacao.latitude = (
                 data["latitude"] if data["latitude"] else estacao.latitude
@@ -79,7 +75,6 @@ class ApiRestId(Resource):
     @jwt_required()
     def delete(self, id):
         estacao = Estacao.query.get(id)
-        print(current_identity)
 
         if estacao:
             db.session.delete(estacao)

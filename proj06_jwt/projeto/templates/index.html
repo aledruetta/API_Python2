@@ -1,16 +1,25 @@
 {% extends "base.html" %}
 
 {% block main %}
-    <main>
-      <form action="">
-        <label for="" class="lbl rotulo1"><input type="text"></label>
-        <label for="" class="lbl rotulo2"><input type="text"></label>
-        <label for="" class="lbl rotulo3"><input type="text"></label>
-      </form>
-      <section>
-        <article></article>
-        <article></article>
-        <article></article>
-      </section>
-    </main>
+  <section class="section">
+    <div class="container">
+
+      <h1 class="title is-1">
+        Estações Meteorológicas ACME
+      </h1>
+
+      <h2 class="subtitle is-3">
+        As melhores do Universo conhecido by <strong>ACME</strong>!
+      </h2>
+
+      <ul>
+      {% for estacao in estacoes %}
+        <li>
+          {{ estacao.local }}: {{ estacao.latitude }}, {{ estacao.longitude }}
+        </li>
+      {% endfor %}
+      </ul>
+
+    </div>
+  </section>
 {% endblock %}

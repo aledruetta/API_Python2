@@ -1,7 +1,7 @@
 from flask_jwt import JWT
 from werkzeug.security import safe_str_cmp
 
-from .models import User
+from .auth.models import User
 
 
 def authenticate(email, password):

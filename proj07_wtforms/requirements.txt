@@ -1,0 +1,10 @@
+Flask
+flask-sqlalchemy
+flask-restful
+flask-jwt
+flask-wtf
+pylint
+flask-bootstrap
+fontawesome
+isort
+black

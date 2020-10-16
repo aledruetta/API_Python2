@@ -1,4 +1,4 @@
-from flask import Blueprint, redirect, render_template, url_for
+from flask import Blueprint, flash, redirect, render_template, url_for
 from flask_wtf import FlaskForm
 from wtforms import PasswordField
 from wtforms.fields.html5 import EmailField
@@ -27,6 +27,8 @@ def login():
         ):
             login_user(user)
             return redirect(url_for("site.index"))
+        else:
+            flash("Dados inválidos!")
     return render_template("login.html", form=form)
 
 

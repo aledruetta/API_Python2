@@ -31,6 +31,12 @@
 							</p>
 						</div>
 
+            <div class="notification is-danger is-light">
+            {% with messages = get_flashed_messages() %}
+              {{ messages[0] }}
+            {% endwith %}
+            </div>
+
 						<div class="field">
 							<p class="control">
 								<button class="button is-success">

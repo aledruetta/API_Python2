@@ -3,10 +3,10 @@ from flask_restful import Resource, reqparse
 
 from projeto.ext.db import db
 
-from .models import Estacao
+from .models import Estacao, Sensor
 
 
-class ApiRest(Resource):
+class ApiEstacao(Resource):
     def get(self):
         estacoes = Estacao.query.all()
         data = [estacao.json() for estacao in estacoes]
@@ -39,7 +39,7 @@ class ApiRest(Resource):
         return {"created": estacao.json()}
 
 
-class ApiRestId(Resource):
+class ApiEstacaoId(Resource):
     def get(self, id):
         estacao = Estacao.query.get(id)
 
@@ -81,4 +81,70 @@ class ApiRestId(Resource):
             db.session.commit()
 
             return {"deleted": estacao.json()}
+        return {"error": "Recurso inexistente!"}
+
+
+class ApiSensor(Resource):
+    def get(self):
+        sensores = Sensor.query.all()
+        data = [sensor.json() for sensor in sensores]
+        return {"resources": data}
+
+    @jwt_required()
+    def post(self):
+        parser = reqparse.RequestParser()
+        parser.add_argument(
+            "tipo", type=str, required=True, help="Argumento requerido!"
+        )
+        parser.add_argument(
+            "estacao_id", type=int, required=True, help="Argumento requerido!"
+        )
+
+        data = parser.parse_args()
+
+        sensor = Sensor(
+            tipo=data["tipo"],
+            estacao_id=data["estacao_id"],
+        )
+
+        db.session.add(sensor)
+        db.session.commit()
+
+        return {"created": sensor.json()}
+
+
+class ApiSensorId(Resource):
+    def get(self, id):
+        sensor = Sensor.query.get(id)
+
+        if sensor:
+            return {"resource": sensor.json()}
+        return {"error": "Recurso inexistente!"}
+
+    @jwt_required()
+    def put(self, id):
+        parser = reqparse.RequestParser()
+        parser.add_argument("tipo", type=str)
+
+        data = parser.parse_args()
+        sensor = Sensor.query.get(id)
+
+        if sensor:
+            sensor.tipo = data["tipo"] if data["tipo"] else sensor.tipo
+
+            db.session.add(sensor)
+            db.session.commit()
+
+            return {"updated": sensor.json()}
+        return {"error": "Recurso inexistente!"}
+
+    @jwt_required()
+    def delete(self, id):
+        sensor = Sensor.query.get(id)
+
+        if sensor:
+            db.session.delete(sensor)
+            db.session.commit()
+
+            return {"deleted": sensor.json()}
         return {"error": "Recurso inexistente!"}

@@ -31,11 +31,13 @@
 							</p>
 						</div>
 
-            <div class="notification is-danger is-light">
             {% with messages = get_flashed_messages() %}
-              {{ messages[0] }}
+            {% if messages %}
+              <div class="notification is-danger is-light">
+                {{ messages[0] }}
+              </div>
+            {% endif %}
             {% endwith %}
-            </div>
 
 						<div class="field">
 							<p class="control">

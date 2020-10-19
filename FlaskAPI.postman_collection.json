@@ -144,6 +144,53 @@
 			"response": []
 		},
 		{
+			"name": "/api/v1.1/sensor/id/param",
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {}
+			},
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "jwt {{access_token}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"valor\": 23.05,\n    \"datahora\": {{$timestamp}}\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}/api/v1.1/sensor/1/temp",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"api",
+						"v1.1",
+						"sensor",
+						"1",
+						"temp"
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "/api/v1.1/estacao",
 			"request": {
 				"method": "GET",
@@ -220,6 +267,27 @@
 						"1",
 						"sensor",
 						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/api/v1.1/sensor/id/param",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/api/v1.1/sensor/1/temp",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"api",
+						"v1.1",
+						"sensor",
+						"1",
+						"temp"
 					]
 				}
 			},

@@ -9,6 +9,11 @@ class Estacao(db.Model):
     latitude = db.Column("latitude", db.String(255), nullable=False)
     longitude = db.Column("longitude", db.String(255), nullable=False)
 
+    def get_sensor(self, sensor_id):
+        for sensor in self.sensores:
+            if sensor.id == sensor_id:
+                return sensor
+
     def json(self):
         return {
             "id": self.id,
@@ -26,18 +31,22 @@ class Sensor(db.Model):
 
     id = db.Column("id", db.Integer, primary_key=True)
     tipo = db.Column("tipo", db.String(255), nullable=False)
+    descricao = db.Column("descricao", db.String(255), nullable=False)
+    params = db.Column("params", db.String(255), nullable=False)
 
-    estacao_id = db.Column(
-        "estacao_id", db.Integer, db.ForeignKey("estacao.id"), nullable=False
-    )
-    estacao = db.relationship(
-        "Estacao", backref=db.backref("sensores", lazy=True)
-    )
+    estacao_id = db.Column("estacao_id",
+                           db.Integer,
+                           db.ForeignKey("estacao.id"),
+                           nullable=False)
+    estacao = db.relationship("Estacao",
+                              backref=db.backref("sensores", lazy=True))
 
     def json(self):
         return {
             "id": self.id,
             "tipo": self.tipo,
+            "descricao": self.descricao,
+            "params": self.params,
             "estacao_id": self.estacao_id,
         }
 

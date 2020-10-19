@@ -6,160 +6,7 @@
 	},
 	"item": [
 		{
-			"name": "/api/v1.1",
-			"protocolProfileBehavior": {
-				"disabledSystemHeaders": {}
-			},
-			"request": {
-				"auth": {
-					"type": "noauth"
-				},
-				"method": "POST",
-				"header": [
-					{
-						"key": "Content-Type",
-						"type": "text",
-						"value": "application/json"
-					},
-					{
-						"key": "Authorization",
-						"value": "jwt {{access_token}}",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n    \"local\": \"Cunha\",\n\t\"latitude\": \"140.11700\",\n    \"longitude\": \"201.0955\"\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{url}}/api/v1.1",
-					"host": [
-						"{{url}}"
-					],
-					"path": [
-						"api",
-						"v1.1"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "/api/v1.1",
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "{{url}}/api/v1.1",
-					"host": [
-						"{{url}}"
-					],
-					"path": [
-						"api",
-						"v1.1"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "/api/v1.1/id",
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "{{url}}/api/v1.1/1",
-					"host": [
-						"{{url}}"
-					],
-					"path": [
-						"api",
-						"v1.1",
-						"1"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "/api/v1.1/id",
-			"request": {
-				"method": "PUT",
-				"header": [
-					{
-						"key": "Content-Type",
-						"value": "application/json",
-						"type": "text"
-					},
-					{
-						"key": "Authorization",
-						"value": "jwt {{access_token}}",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n\t\"local\": \"Taubate\"\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{url}}/api/v1.1/3",
-					"host": [
-						"{{url}}"
-					],
-					"path": [
-						"api",
-						"v1.1",
-						"3"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "/api/v1.1/id",
-			"request": {
-				"auth": {
-					"type": "noauth"
-				},
-				"method": "DELETE",
-				"header": [
-					{
-						"key": "Content-Type",
-						"value": "application/json",
-						"type": "text"
-					},
-					{
-						"key": "Authorization",
-						"value": "jwt {{access_token}}",
-						"type": "text"
-					}
-				],
-				"url": {
-					"raw": "{{url}}/api/v1.1/2",
-					"host": [
-						"{{url}}"
-					],
-					"path": [
-						"api",
-						"v1.1",
-						"2"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "/auth",
+			"name": "/token",
 			"event": [
 				{
 					"listen": "test",
@@ -193,12 +40,338 @@
 					}
 				},
 				"url": {
-					"raw": "{{url}}/auth",
+					"raw": "{{url}}/token",
 					"host": [
 						"{{url}}"
 					],
 					"path": [
-						"auth"
+						"token"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/api/v1.1/estacao",
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {}
+			},
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "jwt {{access_token}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"local\": \"Ubatuba\",\n\t\"latitude\": \"140.11700\",\n    \"longitude\": \"201.0955\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}/api/v1.1/estacao",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"api",
+						"v1.1",
+						"estacao"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/api/v1.1/estacao/id/sensor",
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {}
+			},
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "jwt {{access_token}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"tipo\": \"DHT-11\",\n    \"descricao\": \"Sensor de leitura de temperatura e umidade.\",\n    \"params\": \"temp,humidity\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}/api/v1.1/estacao/1/sensor",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"api",
+						"v1.1",
+						"estacao",
+						"1",
+						"sensor"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/api/v1.1/estacao",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/api/v1.1/estacao",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"api",
+						"v1.1",
+						"estacao"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/api/v1.1/estacao/id",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/api/v1.1/estacao/1",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"api",
+						"v1.1",
+						"estacao",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/api/v1.1/estacao/id/sensor",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/api/v1.1/estacao/1/sensor",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"api",
+						"v1.1",
+						"estacao",
+						"1",
+						"sensor"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/api/v1.1/estacao/id/sensor/id",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/api/v1.1/estacao/1/sensor/1",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"api",
+						"v1.1",
+						"estacao",
+						"1",
+						"sensor",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/api/v1.1/estacao/id",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "jwt {{access_token}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"local\": \"Taubate\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}/api/v1.1/estacao/1",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"api",
+						"v1.1",
+						"estacao",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/api/v1.1/estacao/id/sensor/id",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "jwt {{access_token}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"tipo\": \"DHT-22\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}/api/v1.1/estacao/1/sensor/1",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"api",
+						"v1.1",
+						"estacao",
+						"1",
+						"sensor",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/api/v1.1/estacao/id",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Authorization",
+						"value": "jwt {{access_token}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{url}}/api/v1.1/estacao/1",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"api",
+						"v1.1",
+						"estacao",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/api/v1.1/estacao/id/sensor/id",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "jwt {{access_token}}"
+					}
+				],
+				"url": {
+					"raw": "{{url}}/api/v1.1/estacao/1/sensor/1",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"api",
+						"v1.1",
+						"estacao",
+						"1",
+						"sensor",
+						"1"
 					]
 				}
 			},

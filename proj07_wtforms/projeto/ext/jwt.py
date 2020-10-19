@@ -6,10 +6,8 @@ from .auth.models import User
 
 def authenticate(email, password):
     user = User.query.filter_by(email=email).first()
-    if user and safe_str_cmp(
-            user.password.encode("utf-8"),
-            password.encode("utf-8")
-    ):
+    if user and safe_str_cmp(user.password.encode("utf-8"),
+                             password.encode("utf-8")):
         return user
 
 

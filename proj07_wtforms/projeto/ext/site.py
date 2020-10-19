@@ -14,19 +14,11 @@ def init_app(app):
 @bp.route("/")
 def index():
     estacoes = Estacao.query.all()
-    return render_template(
-        "index.html",
-        title="Estações",
-        estacoes=estacoes
-    )
+    return render_template("index.html", title="Estações", estacoes=estacoes)
 
 
 @bp.route("/protected")
 @login_required
 def protected():
     users = User.query.all()
-    return render_template(
-        "protected.html",
-        title="Secret",
-        users=users
-    )
+    return render_template("protected.html", title="Secret", users=users)

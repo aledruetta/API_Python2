@@ -4,8 +4,3 @@ flask-restful
 flask-login
 flask-jwt
 flask-wtf
-pylint
-flask-bootstrap
-fontawesome
-isort
-black

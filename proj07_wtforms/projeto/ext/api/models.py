@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from projeto.ext.db import db
 
 
@@ -35,11 +37,13 @@ class Sensor(db.Model):
     params = db.Column("params", db.String(255), nullable=False)
 
     estacao_id = db.Column("estacao_id",
-                           db.Integer,
-                           db.ForeignKey("estacao.id"),
-                           nullable=False)
+                            db.Integer,
+                            db.ForeignKey("estacao.id", ondelete="CASCADE"),
+                            nullable=False)
     estacao = db.relationship("Estacao",
-                              backref=db.backref("sensores", lazy=True))
+                               # cascade="all, delete-orphan",
+                               # single_parent=True,
+                               backref=db.backref("sensores", lazy=True))
 
     def json(self):
         return {
@@ -52,3 +56,36 @@ class Sensor(db.Model):
 
     def __repr__(self):
         return f"{self.tipo}"
+
+
+class Leitura(db.Model):
+    __tablename__ = "leitura"
+
+    id = db.Column("id", db.Integer, primary_key=True)
+    param = db.Column("param", db.String(255), nullable=False)
+    valor = db.Column("valor", db.String(255), nullable=False)
+    datahora = db.Column("datahora", db.DateTime(), nullable=False)
+
+    sensor_id = db.Column("sensor_id",
+                           db.Integer,
+                           db.ForeignKey("sensor.id", ondelete="CASCADE"),
+                           nullable=False)
+    sensor = db.relationship("Sensor",
+                              # cascade="all, delete-orphan",
+                              # single_parent=True,
+                              backref=db.backref("leituras", lazy=True))
+
+    def datahora_str(self):
+        return self.datahora.strftime("%d-%b-%Y (%H:%M:%S.%f)")
+
+    def json(self):
+        return {
+            "id": self.id,
+            "sensor_id": self.sensor_id,
+            "datahora": self.datahora_str(),
+            "param": self.param,
+            "valor": self.valor,
+        }
+
+    def __repr__(self):
+        return f"{self.datahora_str()} - {self.param}: {self.valor}"

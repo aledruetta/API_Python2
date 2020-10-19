@@ -1,12 +1,15 @@
 from flask_restful import Api
 
-from .views import ApiEstacao, ApiEstacaoId, ApiSensor, ApiSensorId
+from .views import (ApiEstacao, ApiEstacaoId, ApiEstacaoIdSensor,
+                    ApiEstacaoIdSensorId)
 
 api = Api()
 api.add_resource(ApiEstacao, "/api/v1.1/estacao")
-api.add_resource(ApiEstacaoId, "/api/v1.1/estacao/<int:id>")
-api.add_resource(ApiSensor, "/api/v1.1/sensor")
-api.add_resource(ApiSensorId, "/api/v1.1/sensor/<int:id>")
+api.add_resource(ApiEstacaoId, "/api/v1.1/estacao/<int:estacao_id>")
+api.add_resource(ApiEstacaoIdSensor,
+                 "/api/v1.1/estacao/<int:estacao_id>/sensor")
+api.add_resource(ApiEstacaoIdSensorId,
+                 "/api/v1.1/estacao/<int:estacao_id>/sensor/<int:sensor_id>")
 
 
 def init_app(app):

@@ -21,10 +21,8 @@ def login():
     form = LoginForm()
     if form.validate_on_submit():
         user = User.query.filter_by(email=form.email.data).first()
-        if user and safe_str_cmp(
-            form.password.data.encode("utf-8"),
-            user.password.encode("utf-8")
-        ):
+        if user and safe_str_cmp(form.password.data.encode("utf-8"),
+                                 user.password.encode("utf-8")):
             login_user(user)
             return redirect(url_for("site.index"))
         else:

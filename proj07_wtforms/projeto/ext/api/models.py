@@ -34,5 +34,12 @@ class Sensor(db.Model):
         "Estacao", backref=db.backref("sensores", lazy=True)
     )
 
+    def json(self):
+        return {
+            "id": self.id,
+            "tipo": self.tipo,
+            "estacao_id": self.estacao_id,
+        }
+
     def __repr__(self):
         return f"{self.tipo}"

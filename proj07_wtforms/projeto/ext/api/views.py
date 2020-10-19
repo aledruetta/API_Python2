@@ -1,9 +1,11 @@
+from datetime import datetime
+
 from flask_jwt import jwt_required
 from flask_restful import Resource, reqparse
 
 from projeto.ext.db import db
 
-from .models import Estacao, Sensor
+from .models import Estacao, Sensor, Leitura
 
 
 class ApiEstacao(Resource):
@@ -166,3 +168,38 @@ class ApiEstacaoIdSensorId(Resource):
 
             return {"deleted": sensor.json()}
         return {"error": "Recurso inexistente!"}
+
+
+class ApiSensorIdParam(Resource):
+    def get(self, sensor_id, param):
+        sensor = Sensor.query.get(sensor_id)
+        if sensor:
+            leituras = [leitura.json() for leitura in sensor.leituras]
+            return {"resource": leituras}
+        return {"error": "Recurso inexistente!"}
+
+    @jwt_required()
+    def post(self, sensor_id, param):
+        parser = reqparse.RequestParser()
+        parser.add_argument("valor",
+                            type=str,
+                            required=True,
+                            help="Argumento requerido!")
+        parser.add_argument("datahora",
+                            type=str,
+                            required=True,
+                            help="Argumento requerido!")
+
+        data = parser.parse_args()
+
+        datahora = datetime.fromtimestamp(int(data["datahora"]))
+
+        leitura = Leitura(datahora=datahora,
+                          valor=data["valor"],
+                          param=param,
+                          sensor_id=sensor_id)
+
+        db.session.add(leitura)
+        db.session.commit()
+
+        return {"created": leitura.json()}

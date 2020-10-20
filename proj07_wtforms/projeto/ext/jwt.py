@@ -1,13 +1,12 @@
 from flask_jwt import JWT
-from werkzeug.security import safe_str_cmp
+from passlib.hash import sha256_crypt
 
 from .auth.models import User
 
 
 def authenticate(email, password):
     user = User.query.filter_by(email=email).first()
-    if user and safe_str_cmp(user.password.encode("utf-8"),
-                             password.encode("utf-8")):
+    if user and sha256_crypt.verify(password, user.password):
         return user
 
 

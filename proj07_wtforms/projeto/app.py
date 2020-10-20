@@ -1,3 +1,4 @@
+from datetime import timedelta
 from flask import Flask
 
 from .ext import auth, api, db, jwt, site
@@ -11,6 +12,7 @@ def create_app():
     app.config["SECRET_KEY"] = "super-secret-key"
     app.config["JWT_AUTH_USERNAME_KEY"] = "email"
     app.config["JWT_AUTH_URL_RULE"] = "/token"
+    app.config["JWT_EXPIRATION_DELTA"] = timedelta(seconds=600)
 
     db.init_app(app)
     api.init_app(app)

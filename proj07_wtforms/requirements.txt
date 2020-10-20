@@ -4,3 +4,5 @@ flask-restful
 flask-login
 flask-jwt
 flask-wtf
+wtform[email]
+passlib

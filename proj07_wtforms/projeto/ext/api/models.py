@@ -1,5 +1,3 @@
-from datetime import datetime
-
 from projeto.ext.db import db
 
 
@@ -37,13 +35,13 @@ class Sensor(db.Model):
     params = db.Column("params", db.String(255), nullable=False)
 
     estacao_id = db.Column("estacao_id",
-                            db.Integer,
-                            db.ForeignKey("estacao.id", ondelete="CASCADE"),
-                            nullable=False)
+                           db.Integer,
+                           db.ForeignKey("estacao.id"),
+                           nullable=False)
     estacao = db.relationship("Estacao",
-                               # cascade="all, delete-orphan",
-                               # single_parent=True,
-                               backref=db.backref("sensores", lazy=True))
+                              backref=db.backref("sensores",
+                                                 cascade="all, delete-orphan",
+                                                 lazy=True))
 
     def json(self):
         return {
@@ -67,13 +65,13 @@ class Leitura(db.Model):
     datahora = db.Column("datahora", db.DateTime(), nullable=False)
 
     sensor_id = db.Column("sensor_id",
-                           db.Integer,
-                           db.ForeignKey("sensor.id", ondelete="CASCADE"),
-                           nullable=False)
+                          db.Integer,
+                          db.ForeignKey("sensor.id"),
+                          nullable=False)
     sensor = db.relationship("Sensor",
-                              # cascade="all, delete-orphan",
-                              # single_parent=True,
-                              backref=db.backref("leituras", lazy=True))
+                             backref=db.backref("leituras",
+                                                cascade="all, delete-orphan",
+                                                lazy=True))
 
     def datahora_str(self):
         return self.datahora.strftime("%d-%b-%Y (%H:%M:%S.%f)")

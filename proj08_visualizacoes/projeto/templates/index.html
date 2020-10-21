@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block extrajs %}
+<script src="https://code.highcharts.com/highcharts.js"></script>
+<script src="{{ url_for('static', filename='visualizacoes.js') }}"></script>
+{% endblock %}
+
+{% block main %}
+  <section class="section">
+    <div class="container">
+
+      <h1 class="title is-1">
+        Estações Meteorológicas ACME
+      </h1>
+
+      <h2 class="subtitle is-3">
+        As melhores do Universo conhecido by <strong>ACME</strong>!
+      </h2>
+
+      <ul>
+      {% for estacao in estacoes %}
+        <li>
+          {{ estacao.local }}: {{ estacao.latitude }}, {{ estacao.longitude }}
+        </li>
+      {% endfor %}
+      </ul>
+
+      <div id="container" style="width:100%; height:400px;"></div>
+
+    </div>
+  </section>
+{% endblock %}

@@ -149,7 +149,7 @@ class ApiEstacaoIdSensorId(Resource):
             sensor.descricao = (data["descricao"]
                                 if data["descricao"] else sensor.descricao)
             sensor.params = (data["params"]
-                                 if data["params"] else sensor.params)
+                             if data["params"] else sensor.params)
 
             db.session.add(sensor)
             db.session.commit()
@@ -174,7 +174,10 @@ class ApiSensorIdParam(Resource):
     def get(self, sensor_id, param):
         sensor = Sensor.query.get(sensor_id)
         if sensor:
-            leituras = [leitura.json() for leitura in sensor.leituras]
+            leituras = [
+                leitura.json() for leitura in sensor.leituras
+                if leitura.param == param
+            ]
             return {"resource": leituras}
         return {"error": "Recurso inexistente!"}
 

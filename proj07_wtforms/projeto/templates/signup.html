@@ -5,7 +5,7 @@
 <section class="hero is-fullheight-with-navbar">
 	<div class="hero-body">
 		<div class="container">
-			<form method="POST" action="{{ url_for('auth.login') }}">
+			<form method="POST" action="{{ url_for('auth.signup') }}">
 				{{ form.csrf_token }}
 
 				<div class="columns is-vcentered">
@@ -42,7 +42,7 @@
 						<div class="field">
 							<p class="control">
 								<button class="button is-success">
-									Log in
+									Sign up
 								</button>
 							</p>
 						</div>

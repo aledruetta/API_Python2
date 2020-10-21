@@ -1,13 +1,13 @@
-from passlib.hash import sha256_crypt
-from flask import Blueprint, flash, redirect, render_template, url_for, request
+from flask import Blueprint, flash, redirect, render_template, request, url_for
+from flask_login import login_required, login_user, logout_user
 from flask_wtf import FlaskForm
 from passlib.hash import sha256_crypt
 from wtforms import PasswordField
 from wtforms.fields.html5 import EmailField
 from wtforms.validators import DataRequired, Email, Length
-from flask_login import login_user, login_required, logout_user
 
 from projeto.ext.db import db
+
 from .models import User
 
 bp = Blueprint("auth", __name__)
@@ -31,7 +31,9 @@ def login():
             login_user(user)
             return redirect(url_for("site.index"))
         flash("Dados inválidos!")
-    return render_template("login.html", form=form)
+    return render_template("login.html",
+                           form=form,
+                           status_in='onclick="return false;" disabled')
 
 
 @bp.route("/signup", methods=["GET", "POST"])
@@ -45,7 +47,9 @@ def signup():
         return redirect(url_for("site.index"))
     if request.method == "POST":
         flash("Dados inválidos!")
-    return render_template("signup.html", form=form)
+    return render_template("signup.html",
+                           form=form,
+                           status_up='onclick="return false;" disabled')
 
 
 @bp.route("/logout")

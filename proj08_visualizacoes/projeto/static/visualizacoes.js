@@ -34,11 +34,11 @@ document.addEventListener('DOMContentLoaded', function () {
         }
       },
       series: [{
-        name: 'Temperatura',
-        data: leitura_temp
-      }, {
         name: 'Umidade',
         data: leitura_umidade
+      }, {
+        name: 'Temperatura',
+        data: leitura_temp
       }]
     });
   });

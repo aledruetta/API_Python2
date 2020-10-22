@@ -1,5 +1,5 @@
 from time import sleep
-from random import random, randint
+from random import random, choice
 from datetime import datetime
 
 import requests
@@ -9,28 +9,26 @@ URL = "http://localhost:5000/token"
 response = requests.post(URL, json=auth)
 token = response.json()['access_token']
 
-SENSOR_ID = 1
-PARAM = "temp"
-url = f"http://localhost:5000/api/v1.1/sensor/{SENSOR_ID}/{PARAM}"
+sensor = {"id": 1, "parametros": {"temp": [10, 38], "umidade": [50, 90]}}
 
-TEMP_MIN = 26
-TEMP_MAX = 38
-VARIACAO = 0.1
-valor = random() * (TEMP_MAX - TEMP_MIN) + TEMP_MIN
-valores = [-VARIACAO*2, -VARIACAO, 0, VARIACAO, VARIACAO*2]
+for param in sensor["parametros"]:
+    url = f"http://localhost:5000/api/v1.1/sensor/{sensor['id']}/{param}"
+    l_min = sensor["parametros"][param][0]
+    l_max = sensor["parametros"][param][1]
 
-for i in range(500):
-    num = randint(0, 4)
-    valor += valores[num]
+    valor = random() * (l_max - l_min) + l_min
 
-    leitura = {
-        "valor": valor,
-        "datahora": int(datetime.timestamp(datetime.now()))
-    }
+    for i in range(20):
+        valor *= 1 + choice(range(-5, 6)) / 100
 
-    response = requests.post(url,
-                             json=leitura,
-                             headers={"Authorization": f"jwt {token}"})
-    sleep(1)
+        leitura = {
+            "valor": f"{valor:.2f}",
+            "datahora": int(datetime.timestamp(datetime.now()))
+        }
 
-    print(response.json())
+        response = requests.post(url,
+                                 json=leitura,
+                                 headers={"Authorization": f"jwt {token}"})
+        sleep(1)
+
+        print(response.json())

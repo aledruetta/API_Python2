@@ -18,7 +18,7 @@ for param in sensor["parametros"]:
 
     valor = random() * (l_max - l_min) + l_min
 
-    for i in range(20):
+    while True:
         valor *= 1 + choice(range(-5, 6)) / 100
 
         leitura = {

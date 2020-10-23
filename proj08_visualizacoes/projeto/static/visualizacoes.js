@@ -1,13 +1,39 @@
 document.addEventListener('DOMContentLoaded', function () {
   var myChart = Highcharts.chart('container', {
     chart: {
-      type: 'area'
+      type: 'spline',
+      animation: Highcharts.svg, // don't animate in old IE
+      marginRight: 10,
+      events: {
+        load: function () {
+          var temperatura = this.series[0];
+          setInterval(function () {
+            fetch("/api/v1.1/sensor/1/temp/last")
+            .then(function(response) {
+              var contentType = response.headers.get('content-type');
+              if (contentType && contentType.indexOf("application/json") !== -1) {
+                return response.json()
+                .then(function(json) {
+                  var x = json.resource.datahora;
+                  var y = parseFloat(json.resource.valor);
+                  temperatura.addPoint([x, y], true, true);
+                  console.log(temperatura.data);
+                });
+              }
+            });
+          }, 1000);
+        }
+      }
+    },
+    time: {
+      useUTC: false
     },
     title: {
       text: 'Média Anual'
     },
     xAxis: {
-      categories: ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro']
+      type: 'datetime',
+      tickPixelInterval: 150
     },
     yAxis: {
       title: {
@@ -16,10 +42,19 @@ document.addEventListener('DOMContentLoaded', function () {
     },
     series: [{
       name: 'Temperatura',
-      data: [23, 41, 8, 12, 18, 22, 19.04, 39, 33.2, 11, 0, -4.7]
-    }, {
-      name: 'Umidade',
-      data: [33, 32, 8, 76, 70, 22, 19.04, 68, 15.2, 7, 12, 97]
+      data: (function () {
+        var data = [],
+            time = (new Date()).getTime(),
+            i;
+
+        for (i = -9; i <= 0; i += 1) {
+            data.push({
+              x: time + i * 1000,
+              y: null
+            });
+        }
+        return data;
+      }())
     }]
   });
 });

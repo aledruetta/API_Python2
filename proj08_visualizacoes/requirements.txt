@@ -6,3 +6,4 @@ flask-jwt
 flask-wtf
 wtform[email]
 passlib
+numpy

@@ -170,18 +170,6 @@ class ApiEstacaoIdSensorId(Resource):
         return {"error": "Recurso inexistente!"}
 
 
-class ApiSensorIdParamLast(Resource):
-    def get(self, sensor_id, param):
-        sensor = Sensor.query.get(sensor_id)
-        if sensor:
-            leituras = [
-                leitura.json() for leitura in sensor.leituras
-                if leitura.param == param
-            ]
-            return {"resource": leituras[-1]}
-        return {"error": "Recurso inexistente!"}
-
-
 class ApiSensorIdParam(Resource):
     def get(self, sensor_id, param):
         sensor = Sensor.query.get(sensor_id)
@@ -218,3 +206,16 @@ class ApiSensorIdParam(Resource):
         db.session.commit()
 
         return {"created": leitura.json()}
+
+
+class ApiSensorIdParamLast(Resource):
+    def get(self, sensor_id, param):
+        sensor = Sensor.query.get(sensor_id)
+        if sensor:
+            leituras = [
+                leitura.json() for leitura in sensor.leituras
+                if leitura.param == param
+            ]
+            if leituras:
+                return {"resource": leituras[-1]}
+        return {"error": "Recurso inexistente!"}

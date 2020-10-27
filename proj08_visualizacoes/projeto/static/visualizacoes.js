@@ -1,4 +1,5 @@
 document.addEventListener('DOMContentLoaded', function () {
+
   Highcharts.chart('container', {
     chart: {
       type: 'area',
@@ -6,22 +7,26 @@ document.addEventListener('DOMContentLoaded', function () {
       marginRight: 10,
       events: {
         load: function () {
-          // set up the updating of the chart each second
-          var temperatura = this.series[0];
-          var umidade = this.series[1];
 
+          var umidade = this.series[0];
+          var temperatura = this.series[1];
+
+          // set up the updating of the chart each second
           setInterval(function () {
             ["umidade", "temp"].forEach(function(param) {
 
               fetch("/api/v1.1/sensor/1/" + param + "/last")
               .then(function(response) {
                 var contentType = response.headers.get('content-type');
+
                 if (contentType && contentType.indexOf("application/json") !== -1) {
                   return response.json()
+
                   .then(function(json) {
+                    // seconds (python) to milliseconds (js)
                     var x = json.resource.datahora * 1000;
                     var y = parseFloat(json.resource.valor);
-                    console.log(x, y);
+
                     if (param === "temp")
                       temperatura.addPoint([x, y], true, true);
                     else
@@ -79,7 +84,7 @@ document.addEventListener('DOMContentLoaded', function () {
     },
 
     legend: {
-        enabled: false
+        enabled: true
     },
 
     exporting: {
@@ -88,7 +93,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     series: [
       {
-        name: 'Temperatura',
+        name: 'Umidade',
         data: (function () {
             // generate an array of random data
             var data = [],
@@ -107,7 +112,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }())
       },
       {
-        name: 'Umidade',
+        name: 'Temperatura',
         data: (function () {
             // generate an array of random data
             var data = [],

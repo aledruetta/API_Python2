@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from projeto.ext.db import db
 
 
@@ -80,7 +82,7 @@ class Leitura(db.Model):
         return {
             "id": self.id,
             "sensor_id": self.sensor_id,
-            "datahora": self.datahora_str(),
+            "datahora": datetime.timestamp(self.datahora),
             "param": self.param,
             "valor": self.valor,
         }

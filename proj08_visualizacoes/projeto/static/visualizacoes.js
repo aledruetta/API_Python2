@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
           // set up the updating of the chart each second
           setInterval(function () {
-            ["umidade", "temp"].forEach(function(param) {
+            ["umidade", "temperatura"].forEach(function(param) {
 
               fetch("/api/v1.1/sensor/1/" + param + "/last")
               .then(function(response) {
@@ -27,9 +27,9 @@ document.addEventListener('DOMContentLoaded', function () {
                     var x = json.resource.datahora * 1000;
                     var y = parseFloat(json.resource.valor);
 
-                    if (param === "temp")
+                    if (param === "temperatura")
                       temperatura.addPoint([x, y], true, true);
-                    else
+                    else if (param === "umidade")
                       umidade.addPoint([x, y], true, true);
                   });
                 }

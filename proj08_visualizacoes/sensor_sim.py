@@ -1,41 +1,111 @@
 from time import sleep
 from random import random, choice
 from datetime import datetime
+from projeto.ext.api.models import Estacao, Sensor, Leitura
+from projeto.ext.db import db
 
 import requests
 import numpy as np
-
-auth = {"email": "alvaro@gmail.com", "password": "12345678"}
-URL = "http://localhost:5000/token"
-response = requests.post(URL, json=auth)
-TOKEN = response.json()['access_token']
 
 MIN_VAR = -0.5
 MAX_VAR = 0.5
 LINSPACE = np.linspace(MIN_VAR, MAX_VAR, 10)
 
-sensor = {"id": 1, "parametros": {"temp": [10, 38], "umidade": [50, 90]}}
+MIN_TEMP = 10
+MAX_TEMP = 40
+MIN_UMID = 50
+MAX_UMID = 100
 
-for param in sensor["parametros"].keys():
-    pmin = min(sensor["parametros"][param])
-    pmax = max(sensor["parametros"][param])
-    sensor["parametros"][param].append(random() * (pmax - pmin) + pmin)
 
-while True:
+def create_all():
+    estacoes = [
+        Estacao(local="Ubatuba", latitude="-23.43389", longitude="-45.07111"),
+        # Estacao(local="Caraguatatuba",
+        #         latitude="-23.62028",
+        #         longitude="-45.41306"),
+        # Estacao(local="Cunha", latitude="-23.07444", longitude="-44.95972")
+    ]
 
-    for param in sensor["parametros"]:
-        url = f"http://localhost:5000/api/v1.1/sensor/{sensor['id']}/{param}"
+    sensores = [
+        Sensor(tipo="DHT11",
+               descricao="Sensor temperatura e umidade",
+               params="temperatura,umidade",
+               estacao_id=1),
+        Sensor(tipo="DHT22",
+               descricao="Sensor temperatura e umidade",
+               params="temperatura,umidade",
+               estacao_id=2),
+        Sensor(tipo="BMP180",
+               descricao="Sensor temperatura e umidade",
+               params="temperatura",
+               estacao_id=3)
+    ]
 
-        sensor["parametros"][param][2] += random() * choice(LINSPACE)
+    for estacao in estacoes:
+        db.session.add(estacao)
+        db.session.commit()
 
-        leitura = {
-            "valor": f"{sensor['parametros'][param][2]:.2f}",
-            "datahora": int(datetime.timestamp(datetime.now()))
-        }
+    for sensor in sensores:
+        db.session.add(sensor)
+        db.session.commit()
 
-        response = requests.post(url,
-                                 json=leitura,
-                                 headers={"Authorization": f"jwt {TOKEN}"})
+
+def post(url, leitura, token):
+    response = requests.post(url,
+                             json={
+                                 "valor": f"{leitura.valor:.2f}",
+                                 "datahora": getDatahora()
+                             },
+                             headers={"Authorization": f"jwt {token}"})
+    print(response.json())
+
+
+def getDatahora():
+    return int(datetime.timestamp(datetime.now()))
+
+
+def simular():
+    auth = {"email": "admin@gmail.com", "password": "12345678"}
+    URL = "http://localhost:5000/token"
+    token = requests.post(URL, json=auth).json()['access_token']
+
+    sensores = Sensor.query.all()
+
+    # Cria valores iniciais
+    for sensor in sensores:
+        for param in sensor.params.split(","):
+            if param == "temperatura":
+                pmin = MIN_TEMP
+                pmax = MAX_TEMP
+            elif param == "umidade":
+                pmin = MIN_UMID
+                pmax = MAX_UMID
+
+            url = f"http://localhost:5000/api/v1.1/sensor/{sensor.id}/{param}"
+            valor = random() * (pmax - pmin) + pmin
+            leitura = Leitura(valor=valor, datahora=getDatahora())
+            post(url, leitura, token)
+
+    # Simula geração de leituras a cada 1 segundo
+    while True:
         sleep(1)
 
-        print(response.json())
+        for sensor in sensores:
+            for param in sensor.params.split(","):
+                url = f"http://localhost:5000/api/v1.1/sensor/{sensor.id}/{param}"
+                last = float(sensor.leituras[-1].valor)
+                valor = last + random() * choice(LINSPACE)
+                leitura = Leitura(valor=valor, datahora=getDatahora())
+                post(url, leitura, token)
+
+
+if __name__ == "__main__":
+    print("""
+    Esse script não deve ser executado.
+    Uso:
+        - crie uma sessão interativa com `flask shell`
+        - importe o módulo com `import sensor_sim`
+        - chame a função com:
+            `sensor_sim.create_all()`
+            `sensor_sim.simular()`
+    """)

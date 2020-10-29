@@ -8,8 +8,8 @@ import requests
 from projeto.ext.api.models import Estacao, Leitura, Sensor
 from projeto.ext.db import db
 
-MIN_VAR = -0.5
-MAX_VAR = 0.5
+MIN_VAR = -1
+MAX_VAR = 1
 LINSPACE = np.linspace(MIN_VAR, MAX_VAR, 10)
 
 MIN_TEMP = 10

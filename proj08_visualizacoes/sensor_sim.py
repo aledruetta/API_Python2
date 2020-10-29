@@ -1,11 +1,12 @@
-from time import sleep
-from random import random, choice
 from datetime import datetime
-from projeto.ext.api.models import Estacao, Sensor, Leitura
-from projeto.ext.db import db
+from random import choice, random
+from time import sleep
 
-import requests
 import numpy as np
+import requests
+
+from projeto.ext.api.models import Estacao, Leitura, Sensor
+from projeto.ext.db import db
 
 MIN_VAR = -0.5
 MAX_VAR = 0.5
@@ -70,9 +71,11 @@ def simular():
     token = requests.post(URL, json=auth).json()['access_token']
 
     sensores = Sensor.query.all()
+    valores = []
 
     # Cria valores iniciais
     for sensor in sensores:
+        valores_sensor = []
         for param in sensor.params.split(","):
             if param == "temperatura":
                 pmin = MIN_TEMP
@@ -81,24 +84,22 @@ def simular():
                 pmin = MIN_UMID
                 pmax = MAX_UMID
 
-            url = f"http://localhost:5000/api/v1.1/sensor/{sensor.id}/{param}"
             valor = random() * (pmax - pmin) + pmin
-            leitura = Leitura(valor=valor, datahora=getDatahora())
-            post(url, leitura, token)
+            valores_sensor.append(valor)
+
+        valores.append(valores_sensor)
 
     # Simula geração de leituras a cada 1 segundo
     while True:
         sleep(1)
 
-        for sensor in sensores:
-            for param in sensor.params.split(","):
-                url = f"http://localhost:5000/api/v1.1/sensor/{sensor.id}/{param}"
-                i = 1
-                while (i < len(sensor.leituras)
-                       and sensor.leituras[-i].param != param):
-                    i += 1
-                last = float(sensor.leituras[-i].valor)
-                valor = last + random() * choice(LINSPACE)
+        for s in range(len(sensores)):
+            params = sensores[s].params.split(",")
+            print(params)
+            for p in range(len(params)):
+                url = f"http://localhost:5000/api/v1.1/sensor/{sensores[s].id}/{params[p]}"
+                inicial = float(valores[s][p])
+                valor = inicial + random() * choice(LINSPACE)
                 leitura = Leitura(valor=valor, datahora=getDatahora())
                 post(url, leitura, token)
 

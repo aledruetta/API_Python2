@@ -20,10 +20,10 @@ MAX_UMID = 100
 def create_all():
     estacoes = [
         Estacao(local="Ubatuba", latitude="-23.43389", longitude="-45.07111"),
-        # Estacao(local="Caraguatatuba",
-        #         latitude="-23.62028",
-        #         longitude="-45.41306"),
-        # Estacao(local="Cunha", latitude="-23.07444", longitude="-44.95972")
+        Estacao(local="Caraguatatuba",
+                latitude="-23.62028",
+                longitude="-45.41306"),
+        Estacao(local="Cunha", latitude="-23.07444", longitude="-44.95972")
     ]
 
     sensores = [
@@ -93,7 +93,11 @@ def simular():
         for sensor in sensores:
             for param in sensor.params.split(","):
                 url = f"http://localhost:5000/api/v1.1/sensor/{sensor.id}/{param}"
-                last = float(sensor.leituras[-1].valor)
+                i = 1
+                while (i < len(sensor.leituras)
+                       and sensor.leituras[-i].param != param):
+                    i += 1
+                last = float(sensor.leituras[-i].valor)
                 valor = last + random() * choice(LINSPACE)
                 leitura = Leitura(valor=valor, datahora=getDatahora())
                 post(url, leitura, token)

@@ -14,8 +14,8 @@ LINSPACE = np.linspace(MIN_VAR, MAX_VAR, 10)
 
 MIN_TEMP = 10
 MAX_TEMP = 40
-MIN_UMID = 50
-MAX_UMID = 100
+MIN_UMIDADE = 50
+MAX_UMIDADE = 100
 
 
 def create_all():
@@ -71,34 +71,34 @@ def simular():
     token = requests.post(URL, json=auth).json()['access_token']
 
     sensores = Sensor.query.all()
-    valores = []
+    valores_iniciais = []
 
-    # Cria valores iniciais
+    # Determina os valores iniciais para cada parámetro
     for sensor in sensores:
-        valores_sensor = []
+        valores_sensor = {}
         for param in sensor.params.split(","):
             if param == "temperatura":
                 pmin = MIN_TEMP
                 pmax = MAX_TEMP
             elif param == "umidade":
-                pmin = MIN_UMID
-                pmax = MAX_UMID
+                pmin = MIN_UMIDADE
+                pmax = MAX_UMIDADE
 
             valor = random() * (pmax - pmin) + pmin
-            valores_sensor.append(valor)
+            valores_sensor[param] = valor
 
-        valores.append(valores_sensor)
+        valores_iniciais.append(valores_sensor)
+    zip_sensores = list(zip(sensores, valores_iniciais))
 
     # Simula geração de leituras a cada 1 segundo
     while True:
         sleep(1)
 
-        for s in range(len(sensores)):
-            params = sensores[s].params.split(",")
-            print(params)
-            for p in range(len(params)):
-                url = f"http://localhost:5000/api/v1.1/sensor/{sensores[s].id}/{params[p]}"
-                inicial = float(valores[s][p])
+        for sensor, valores in zip_sensores:
+            params = sensor.params.split(",")
+            for param in params:
+                url = f"http://localhost:5000/api/v1.1/sensor/{sensor.id}/{param}"
+                inicial = float(valores[param])
                 valor = inicial + random() * choice(LINSPACE)
                 leitura = Leitura(valor=valor, datahora=getDatahora())
                 post(url, leitura, token)

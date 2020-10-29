@@ -1,29 +1,30 @@
-from time import sleep
-from random import random, choice
 from datetime import datetime
-from projeto.ext.api.models import Estacao, Sensor, Leitura
+from random import choice, random
+from time import sleep
+
+import numpy as np
+import requests
+
+from projeto.ext.api.models import Estacao, Leitura, Sensor
 from projeto.ext.db import db
 
-import requests
-import numpy as np
-
-MIN_VAR = -0.5
-MAX_VAR = 0.5
+MIN_VAR = -1
+MAX_VAR = 1
 LINSPACE = np.linspace(MIN_VAR, MAX_VAR, 10)
 
 MIN_TEMP = 10
 MAX_TEMP = 40
-MIN_UMID = 50
-MAX_UMID = 100
+MIN_UMIDADE = 50
+MAX_UMIDADE = 100
 
 
 def create_all():
     estacoes = [
         Estacao(local="Ubatuba", latitude="-23.43389", longitude="-45.07111"),
-        # Estacao(local="Caraguatatuba",
-        #         latitude="-23.62028",
-        #         longitude="-45.41306"),
-        # Estacao(local="Cunha", latitude="-23.07444", longitude="-44.95972")
+        Estacao(local="Caraguatatuba",
+                latitude="-23.62028",
+                longitude="-45.41306"),
+        Estacao(local="Cunha", latitude="-23.07444", longitude="-44.95972")
     ]
 
     sensores = [
@@ -70,31 +71,35 @@ def simular():
     token = requests.post(URL, json=auth).json()['access_token']
 
     sensores = Sensor.query.all()
+    valores_iniciais = []
 
-    # Cria valores iniciais
+    # Determina os valores iniciais para cada parámetro
     for sensor in sensores:
+        valores_sensor = {}
         for param in sensor.params.split(","):
             if param == "temperatura":
                 pmin = MIN_TEMP
                 pmax = MAX_TEMP
             elif param == "umidade":
-                pmin = MIN_UMID
-                pmax = MAX_UMID
+                pmin = MIN_UMIDADE
+                pmax = MAX_UMIDADE
 
-            url = f"http://localhost:5000/api/v1.1/sensor/{sensor.id}/{param}"
             valor = random() * (pmax - pmin) + pmin
-            leitura = Leitura(valor=valor, datahora=getDatahora())
-            post(url, leitura, token)
+            valores_sensor[param] = valor
+
+        valores_iniciais.append(valores_sensor)
+    zip_sensores = list(zip(sensores, valores_iniciais))
 
     # Simula geração de leituras a cada 1 segundo
     while True:
         sleep(1)
 
-        for sensor in sensores:
-            for param in sensor.params.split(","):
+        for sensor, valores in zip_sensores:
+            params = sensor.params.split(",")
+            for param in params:
                 url = f"http://localhost:5000/api/v1.1/sensor/{sensor.id}/{param}"
-                last = float(sensor.leituras[-1].valor)
-                valor = last + random() * choice(LINSPACE)
+                inicial = float(valores[param])
+                valor = inicial + random() * choice(LINSPACE)
                 leitura = Leitura(valor=valor, datahora=getDatahora())
                 post(url, leitura, token)
 

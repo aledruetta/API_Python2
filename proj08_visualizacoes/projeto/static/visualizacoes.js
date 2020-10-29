@@ -1,5 +1,26 @@
 document.addEventListener('DOMContentLoaded', function () {
 
+  // preenche a lista de seleção das estações
+  fetch("/api/v1.1/estacao")
+
+    .then(function(response) {
+      var contentType = response.headers.get('content-type');
+      if (contentType && contentType.indexOf("application/json") !== -1) {
+        return response.json()
+
+        .then(function(json) {
+          $('#origens').empty();
+          json.resources.forEach(function(estacao) {
+            $('#origens')
+              .append($('<option></option>')
+                .val(estacao.local + '#' + estacao.id)
+                .text(estacao.local + ' #' + estacao.id)
+              );
+          });
+        });
+      }
+    });
+
   Highcharts.chart('container', {
     chart: {
       type: 'area',
@@ -16,24 +37,24 @@ document.addEventListener('DOMContentLoaded', function () {
             ["umidade", "temperatura"].forEach(function(param) {
 
               fetch("/api/v1.1/sensor/1/" + param + "/last")
-              .then(function(response) {
-                var contentType = response.headers.get('content-type');
+                .then(function(response) {
+                  var contentType = response.headers.get('content-type');
 
-                if (contentType && contentType.indexOf("application/json") !== -1) {
-                  return response.json()
+                  if (contentType && contentType.indexOf("application/json") !== -1) {
+                    return response.json()
 
-                  .then(function(json) {
-                    // seconds (python) to milliseconds (js)
-                    var x = json.resource.datahora * 1000;
-                    var y = parseFloat(json.resource.valor);
+                    .then(function(json) {
+                      // seconds (python) to milliseconds (js)
+                      var x = json.resource.datahora * 1000;
+                      var y = parseFloat(json.resource.valor);
 
-                    if (param === "temperatura")
-                      temperatura.addPoint([x, y], true, true);
-                    else if (param === "umidade")
-                      umidade.addPoint([x, y], true, true);
-                  });
-                }
-              });
+                      if (param === "temperatura")
+                        temperatura.addPoint([x, y], true, true);
+                      else if (param === "umidade")
+                        umidade.addPoint([x, y], true, true);
+                    });
+                  }
+                });
 
             });
           }, 1000);

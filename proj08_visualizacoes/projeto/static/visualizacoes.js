@@ -1,25 +1,39 @@
-document.addEventListener('DOMContentLoaded', function () {
+$(function () {
+
+  let url_base = "/api/v1.1/";
 
   // preenche a lista de seleção das estações
-  fetch("/api/v1.1/estacao")
+  fetch(url_base + "estacao")
 
     .then(function(response) {
       var contentType = response.headers.get('content-type');
       if (contentType && contentType.indexOf("application/json") !== -1) {
         return response.json()
-
         .then(function(json) {
           $('#origens').empty();
           json.resources.forEach(function(estacao) {
             $('#origens')
               .append($('<option></option>')
-                .val(estacao.local + '#' + estacao.id)
+                .val(estacao.id)
                 .text(estacao.local + ' #' + estacao.id)
               );
           });
         });
       }
     });
+
+  $('#origens').change(function() {
+    fetch(url_base + "estacao/" + this.value)
+      .then(function(response) {
+        var contentType = response.headers.get('content-type');
+        if (contentType && contentType.indexOf("application/json") !== -1) {
+          return response.json()
+          .then(function(json) {
+            alert(json.resource.id);
+          });
+        }
+      });
+  });
 
   Highcharts.chart('container', {
     chart: {
@@ -36,7 +50,7 @@ document.addEventListener('DOMContentLoaded', function () {
           setInterval(function () {
             ["umidade", "temperatura"].forEach(function(param) {
 
-              fetch("/api/v1.1/sensor/1/" + param + "/last")
+              fetch(url_base + "sensor/1/" + param + "/last")
                 .then(function(response) {
                   var contentType = response.headers.get('content-type');
 

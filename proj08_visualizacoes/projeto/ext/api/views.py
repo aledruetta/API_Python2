@@ -14,7 +14,7 @@ class ApiEstacao(Resource):
         data = [estacao.json() for estacao in estacoes]
         return {"resources": data}
 
-    @jwt_required()
+    # @jwt_required()
     def post(self):
         parser = reqparse.RequestParser()
         parser.add_argument("local",
@@ -52,7 +52,7 @@ class ApiEstacaoId(Resource):
             return {"resource": estacao.json()}
         return {"error": "Recurso inexistente!"}
 
-    @jwt_required()
+    # @jwt_required()
     def put(self, estacao_id):
         parser = reqparse.RequestParser()
         parser.add_argument("local", type=str)
@@ -75,7 +75,7 @@ class ApiEstacaoId(Resource):
             return {"updated": estacao.json()}
         return {"error": "Recurso inexistente!"}
 
-    @jwt_required()
+    # @jwt_required()
     def delete(self, estacao_id):
         estacao = Estacao.query.get(estacao_id)
 
@@ -96,7 +96,7 @@ class ApiEstacaoIdSensor(Resource):
             return {"resources": data}
         return {"error": "Recurso inexistente!"}
 
-    @jwt_required()
+    # @jwt_required()
     def post(self, estacao_id):
         parser = reqparse.RequestParser()
         parser.add_argument("tipo",
@@ -133,7 +133,7 @@ class ApiEstacaoIdSensorId(Resource):
             return {"resource": sensor.json()}
         return {"error": "Recurso inexistente!"}
 
-    @jwt_required()
+    # @jwt_required()
     def put(self, estacao_id, sensor_id):
         parser = reqparse.RequestParser()
         parser.add_argument("tipo", type=str)
@@ -157,7 +157,7 @@ class ApiEstacaoIdSensorId(Resource):
             return {"updated": sensor.json()}
         return {"error": "Recurso inexistente!"}
 
-    @jwt_required()
+    # @jwt_required()
     def delete(self, estacao_id, sensor_id):
         estacao = Estacao.query.get(sensor_id)
 
@@ -181,7 +181,7 @@ class ApiSensorIdParam(Resource):
             return {"resource": leituras}
         return {"error": "Recurso inexistente!"}
 
-    @jwt_required()
+    # @jwt_required()
     def post(self, sensor_id, param):
         parser = reqparse.RequestParser()
         parser.add_argument("valor",

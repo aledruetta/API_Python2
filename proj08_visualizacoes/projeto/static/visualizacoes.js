@@ -1,35 +1,66 @@
 $(function () {
 
-  let url_base = "/api/v1.1/";
+  let url_base = "/api/v1.1";
 
   // preenche a lista de seleção das estações
-  fetch(url_base + "estacao")
+  fetch(`${url_base}/estacao`)
 
     .then(function(response) {
       var contentType = response.headers.get('content-type');
       if (contentType && contentType.indexOf("application/json") !== -1) {
         return response.json()
+
         .then(function(json) {
           $('#origens').empty();
           json.resources.forEach(function(estacao) {
             $('#origens')
               .append($('<option></option>')
                 .val(estacao.id)
-                .text(estacao.local + ' #' + estacao.id)
+                .text(`${estacao.local} #${estacao.id}`)
               );
           });
         });
       }
     });
 
+  // Observa mudanças na lista de seleção
   $('#origens').change(function() {
-    fetch(url_base + "estacao/" + this.value)
+    //
+    // Recupera a lista de sensores da estação selecionada
+    fetch(`${url_base}/estacao/${this.value}/sensor`)
       .then(function(response) {
         var contentType = response.headers.get('content-type');
         if (contentType && contentType.indexOf("application/json") !== -1) {
           return response.json()
+
+          // Atualiza o gráfico com a informação dos sensores
           .then(function(json) {
-            alert(json.resource.id);
+            sensores = json.resources;
+            sensores.forEach(function (sensor) {
+              sensor.params.split(",")
+                .forEach(function (param) {
+                  this.series.append({
+                    name: param,
+                    data: (function () {
+                        // generate an array of random data
+                        var data = [],
+                            time = (new Date()).getTime(),
+                            i;
+
+                        for (i = -299; i <= 0; i += 1) {
+                            let x = time + i * 1000;
+                            let y = 0;
+                            data.push({
+                                x: time + i * 1000,
+                                y: 0
+                            });
+                        }
+                        return data;
+                    }())
+                  });
+                });
+            });
+
           });
         }
       });
@@ -48,30 +79,32 @@ $(function () {
 
           // set up the updating of the chart each second
           setInterval(function () {
-            ["umidade", "temperatura"].forEach(function(param) {
+            sensores.forEach(function (sensor) {
+              sensor.params.split(",")
+                .forEach(function(param) {
+                  fetch(`${url_base}/sensor/${sensor.id}/${param}/last`)
+                    .then(function(response) {
+                      var contentType = response.headers.get('content-type');
 
-              fetch(url_base + "sensor/1/" + param + "/last")
-                .then(function(response) {
-                  var contentType = response.headers.get('content-type');
+                      if (contentType && contentType.indexOf("application/json") !== -1) {
+                        return response.json()
 
-                  if (contentType && contentType.indexOf("application/json") !== -1) {
-                    return response.json()
+                        .then(function(json) {
+                          // seconds (python) to milliseconds (js)
+                          var x = json.resource.datahora * 1000;
+                          var y = parseFloat(json.resource.valor);
 
-                    .then(function(json) {
-                      // seconds (python) to milliseconds (js)
-                      var x = json.resource.datahora * 1000;
-                      var y = parseFloat(json.resource.valor);
-
-                      if (param === "temperatura")
-                        temperatura.addPoint([x, y], true, true);
-                      else if (param === "umidade")
-                        umidade.addPoint([x, y], true, true);
+                          if (param === "temperatura")
+                            temperatura.addPoint([x, y], true, true);
+                          else if (param === "umidade")
+                            umidade.addPoint([x, y], true, true);
+                        });
+                      }
                     });
-                  }
                 });
-
             });
           }, 1000);
+
         }
       }
     },
@@ -126,45 +159,7 @@ $(function () {
         enabled: false
     },
 
-    series: [
-      {
-        name: 'Umidade',
-        data: (function () {
-            // generate an array of random data
-            var data = [],
-                time = (new Date()).getTime(),
-                i;
-
-            for (i = -299; i <= 0; i += 1) {
-                let x = time + i * 1000;
-                let y = 0;
-                data.push({
-                    x: time + i * 1000,
-                    y: 0
-                });
-            }
-            return data;
-        }())
-      },
-      {
-        name: 'Temperatura',
-        data: (function () {
-            // generate an array of random data
-            var data = [],
-                time = (new Date()).getTime(),
-                i;
-
-            for (i = -299; i <= 0; i += 1) {
-                let x = time + i * 1000;
-                let y = 0;
-                data.push({
-                    x: time + i * 1000,
-                    y: 0
-                });
-            }
-            return data;
-        }())
-      },
-    ]
+    series: []
   });
+
 });

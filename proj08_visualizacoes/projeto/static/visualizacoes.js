@@ -23,17 +23,17 @@ $(function () {
       }
     });
 
+  // Observa mudanças na lista de seleção
   $('#origens').change(function() {
+    // Recupera a lista de sensores da estação selecionada
     fetch(`${url_base}/estacao/${this.value}/sensor`)
-
       .then(function(response) {
         var contentType = response.headers.get('content-type');
         if (contentType && contentType.indexOf("application/json") !== -1) {
           return response.json()
-
+          // Atualiza o gráfico com a informação dos sensores
           .then(function(json) {
-            sensor = json.resources[0];
-            params = sensor.params.split(",");
+            sensores = json.resources;
 
             Highcharts.chart('container', {
               chart: {
@@ -48,30 +48,32 @@ $(function () {
 
                     // set up the updating of the chart each second
                     setInterval(function () {
-                      params.forEach(function(param) {
+                      sensores.forEach(function (sensor) {
+                        sensor.params.split(",")
+                          .forEach(function(param) {
+                            fetch(`${url_base}/sensor/${sensor.id}/${param}/last`)
+                              .then(function(response) {
+                                var contentType = response.headers.get('content-type');
 
-                        fetch(`${url_base}/sensor/${sensor.id}/${param}/last`)
-                          .then(function(response) {
-                            var contentType = response.headers.get('content-type');
+                                if (contentType && contentType.indexOf("application/json") !== -1) {
+                                  return response.json()
 
-                            if (contentType && contentType.indexOf("application/json") !== -1) {
-                              return response.json()
+                                  .then(function(json) {
+                                    // seconds (python) to milliseconds (js)
+                                    var x = json.resource.datahora * 1000;
+                                    var y = parseFloat(json.resource.valor);
 
-                              .then(function(json) {
-                                // seconds (python) to milliseconds (js)
-                                var x = json.resource.datahora * 1000;
-                                var y = parseFloat(json.resource.valor);
-
-                                if (param === "temperatura")
-                                  temperatura.addPoint([x, y], true, true);
-                                else if (param === "umidade")
-                                  umidade.addPoint([x, y], true, true);
+                                    if (param === "temperatura")
+                                      temperatura.addPoint([x, y], true, true);
+                                    else if (param === "umidade")
+                                      umidade.addPoint([x, y], true, true);
+                                  });
+                                }
                               });
-                            }
                           });
-
                       });
                     }, 1000);
+
                   }
                 }
               },

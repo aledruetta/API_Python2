@@ -7,3 +7,4 @@ flask-wtf
 wtforms[email]
 passlib
 numpy
+requests

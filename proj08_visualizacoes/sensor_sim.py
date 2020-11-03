@@ -16,6 +16,14 @@ MIN_TEMP = 10
 MAX_TEMP = 40
 MIN_UMIDADE = 50
 MAX_UMIDADE = 100
+MIN_LUMIN = 0
+MAX_LUMIN = 1024
+MIN_CHUVA = 0
+MAX_CHUVA = 100
+MIN_SOM = 0
+MAX_SOM = 100
+MIN_PRES = 0
+MAX_PRES = 100
 
 
 def create_all():
@@ -108,6 +116,18 @@ def simular():
             elif param == "umidade":
                 pmin = MIN_UMIDADE
                 pmax = MAX_UMIDADE
+            elif param == "luminosidade":
+                pmin = MIN_LUMIN
+                pmax = MAX_LUMIN
+            elif param == "chuva":
+                pmin = MIN_CHUVA
+                pmax = MAX_CHUVA
+            elif param == "som":
+                pmin = MIN_SOM
+                pmax = MAX_SOM
+            elif param == "pressao":
+                pmin = MIN_PRES
+                pmax = MAX_PRES
 
             valor = random() * (pmax - pmin) + pmin
             valores_sensor[param] = valor

@@ -4,4 +4,4 @@ venv/
 __pycache__/
 *.sw[pon]
 requirements-dev.txt
-proj08_visualizacoes/*.db*
+*.db*

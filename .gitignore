@@ -5,3 +5,6 @@ __pycache__/
 *.sw[pon]
 requirements-dev.txt
 *.db*
+.eslintrc.*
+node_modules/
+package*

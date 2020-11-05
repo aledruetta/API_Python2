@@ -64,7 +64,6 @@ def create_all():
                descricao="Sensor de altitude e pressão",
                params="altitude,pressao",
                estacao_id=1),
-
         Sensor(tipo="DHT22",
                descricao="Sensor temperatura e umidade",
                params="temp_ambiente,umid_relativa",
@@ -105,6 +104,8 @@ def simular():
 
     sensores = Sensor.query.all()
     valores_iniciais = []
+    pmax = 0
+    pmin = 0
 
     # Determina os valores iniciais para cada parámetro
     for sensor in sensores:

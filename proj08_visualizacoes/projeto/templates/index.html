@@ -30,11 +30,34 @@
           <div class="field has-addons">
             <div class="control has-icons-left is-expanded">
               <div class="select is-fullwidth">
-                <select id="origens" name="estacao">
-                  <option value="Ubatuba">Ubatuba</option>
-                  <option value="Caraguatatuba">Caraguatatuba</option>
-                  <option value="Piracicaba">Piracicaba</option>
-                  <option value="Aparecida">Aparecida</option>
+                <select id="local-sel" name="local">
+                  <option value="1">Ubatuba</option>
+                  <option value="2">Caraguatatuba</option>
+                  <option value="3">Piracicaba</option>
+                  <option value="4">Aparecida</option>
+                </select>
+              </div>
+              <div class="icon is-small is-left">
+                <i class="fas fa-globe"></i>
+              </div>
+            </div>
+            <div class="control has-icons-left is-expanded">
+              <div class="select is-fullwidth">
+                <select id="sensor-sel" name="sensor">
+                  <option value="1">DHT-11</option>
+                  <option value="2">BMP180</option>
+                  <option value="3">LM335</option>
+                </select>
+              </div>
+              <div class="icon is-small is-left">
+                <i class="fas fa-globe"></i>
+              </div>
+            </div>
+            <div class="control has-icons-left is-expanded">
+              <div class="select is-fullwidth">
+                <select id="param-sel" name="param">
+                  <option value="1">Temperatura</option>
+                  <option value="2">Umidade</option>
                 </select>
               </div>
               <div class="icon is-small is-left">

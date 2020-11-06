@@ -14,15 +14,15 @@ LINSPACE = np.linspace(MIN_VAR, MAX_VAR, 10)
 
 MIN_TEMP = 10
 MAX_TEMP = 40
-MIN_UMIDADE = 50
-MAX_UMIDADE = 100
-MIN_LUMIN = 0
-MAX_LUMIN = 1024
-MIN_CHUVA = 0
-MAX_CHUVA = 100
-MIN_SOM = 0
+MIN_UMID = 50
+MAX_UMID = 100
+MIN_LUMI = 30
+MAX_LUMI = 1024
+MIN_CHUV = 5
+MAX_CHUV = 100
+MIN_SOM = 30
 MAX_SOM = 100
-MIN_PRES = 0
+MIN_PRES = 30
 MAX_PRES = 100
 
 
@@ -111,22 +111,22 @@ def simular():
     for sensor in sensores:
         valores_sensor = {}
         for param in sensor.params.split(","):
-            if param == "temperatura":
+            if param.startswith("temp"):
                 pmin = MIN_TEMP
                 pmax = MAX_TEMP
-            elif param == "umidade":
-                pmin = MIN_UMIDADE
-                pmax = MAX_UMIDADE
-            elif param == "luminosidade":
-                pmin = MIN_LUMIN
-                pmax = MAX_LUMIN
+            elif param.startswith("umid"):
+                pmin = MIN_UMID
+                pmax = MAX_UMID
+            elif param.startswith("lumin"):
+                pmin = MIN_LUMI
+                pmax = MAX_LUMI
             elif param == "chuva":
-                pmin = MIN_CHUVA
-                pmax = MAX_CHUVA
+                pmin = MIN_CHUV
+                pmax = MAX_CHUV
             elif param == "som":
                 pmin = MIN_SOM
                 pmax = MAX_SOM
-            elif param == "pressao":
+            elif param.startswith("pres"):
                 pmin = MIN_PRES
                 pmax = MAX_PRES
 

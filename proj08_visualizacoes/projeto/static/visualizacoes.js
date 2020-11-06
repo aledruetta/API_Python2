@@ -1,6 +1,6 @@
 $(function () {
 
-  let url_base = "/api/v1.1";
+  var url_base = "/api/v1.1";
 
   // preenche os campos de seleção: local, sensor, parametro
   fetch(`${url_base}/estacao`)
@@ -12,7 +12,7 @@ $(function () {
       .then(function(json) {
         $('#local-sel').empty();
 
-        let estacoes = json.resources;
+        var estacoes = json.resources;
         estacoes.forEach(function(estacao) {
           $('#local-sel')
             .append($('<option></option>')
@@ -21,7 +21,7 @@ $(function () {
             );
         });
 
-        let estacao = estacoes[0];
+        var estacao = estacoes[0];
         fetch(`${url_base}/estacao/${estacao.id}/sensor`)
         .then(function(response) {
           var contentType = response.headers.get('content-type');
@@ -31,7 +31,7 @@ $(function () {
             .then(function(json) {
               $('#sensor-sel').empty();
 
-              let sensores = json.resources;
+              var sensores = json.resources;
               sensores.forEach(function(sensor) {
                 $('#sensor-sel')
                 .append($('<option></option>')
@@ -40,7 +40,7 @@ $(function () {
                 );
               });
 
-              let sensor = sensores[0];
+              var sensor = sensores[0];
               fetch(`${url_base}/estacao/${estacao.id}/sensor/${sensor.id}`)
               .then(function(response) {
                 var contentType = response.headers.get('content-type');
@@ -67,8 +67,8 @@ $(function () {
                         events: {
                           load: function () {
 
-                            let param = params[0];
-                            let serie = this.series[0];
+                            var param = params[0];
+                            var serie = this.series[0];
 
                             // set up the updating of the chart each second
                             setInterval(function () {
@@ -88,7 +88,7 @@ $(function () {
                                     });
                                   }
                                   });
-                              }, 1000);
+                              }, 5000);
 
                             }
                           }
@@ -152,15 +152,15 @@ $(function () {
                               time = (new Date()).getTime(),
                               i;
 
-                            for (i = -19; i <= 0; i += 1) {
+                            for (i = -18; i <= 0; i += 1) {
                               data.push({
-                                x: time + i * 1000,
+                                x: time + i * 5000,
                                 y: 0
-                            });
-                          }
-                          return data;
-                        }())
-                      }]
+                              });
+                            }
+                            return data;
+                          }())
+                        }]
 
                     });
 
@@ -174,6 +174,7 @@ $(function () {
     }
   });
 
+  /*
   // Observa mudanças na lista de seleção
   $('#origens').change(function() {
     //
@@ -198,7 +199,7 @@ $(function () {
                             time = (new Date()).getTime(),
                             i;
 
-                        for (i = -299; i <= 0; i += 1) {
+                        for (i = -50; i <= 0; i += 1) {
                             let x = time + i * 1000;
                             let y = 0;
                             data.push({
@@ -216,5 +217,6 @@ $(function () {
         }
       });
   });
+  */
 
 });

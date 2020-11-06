@@ -2,26 +2,69 @@ $(function () {
 
   let url_base = "/api/v1.1";
 
-  // preenche a lista de seleção das estações
+  // preenche os campos de seleção
   fetch(`${url_base}/estacao`)
+  .then(function(response) {
+    var contentType = response.headers.get('content-type');
+    if (contentType && contentType.indexOf("application/json") !== -1) {
 
-    .then(function(response) {
-      var contentType = response.headers.get('content-type');
-      if (contentType && contentType.indexOf("application/json") !== -1) {
-        return response.json()
+      return response.json()
+      .then(function(json) {
+        $('#local-sel').empty();
 
-        .then(function(json) {
-          $('#origens').empty();
-          json.resources.forEach(function(estacao) {
-            $('#origens')
-              .append($('<option></option>')
-                .val(estacao.id)
-                .text(`${estacao.local} #${estacao.id}`)
-              );
-          });
+        estacoes = json.resources;
+        estacoes.forEach(function(estacao) {
+          $('#local-sel')
+            .append($('<option></option>')
+              .val(estacao.id)
+              .text(`${estacao.local}#${estacao.id}`)
+            );
         });
-      }
-    });
+
+        fetch(`${url_base}/estacao/${estacoes[0].id}/sensor`)
+        .then(function(response) {
+          var contentType = response.headers.get('content-type');
+          if (contentType && contentType.indexOf("application/json") !== -1) {
+
+            return response.json()
+            .then(function(json) {
+              $('#sensor-sel').empty();
+
+              sensores = json.resources;
+              sensores.forEach(function(sensor) {
+                $('#sensor-sel')
+                .append($('<option></option>')
+                  .val(sensor.id)
+                  .text(`${sensor.tipo}#${sensor.id}`)
+                );
+              });
+
+              fetch(`${url_base}/estacao/${estacoes[0].id}/sensor/${sensores[0].id}`)
+              .then(function(response) {
+                var contentType = response.headers.get('content-type');
+                if (contentType && contentType.indexOf("application/json") !== -1) {
+
+                  return response.json()
+                  .then(function(json) {
+                    $('#param-sel').empty();
+
+                    params = json.resource.params.split(",");
+                    params.forEach(function(param) {
+                      $('#param-sel')
+                      .append($('<option></option>')
+                        .val(param)
+                        .text(`${param}`)
+                      );
+                    });
+                  });
+                }
+              });
+            });
+          }
+        });
+      });
+    }
+  });
 
   // Observa mudanças na lista de seleção
   $('#origens').change(function() {

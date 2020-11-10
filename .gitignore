@@ -7,4 +7,3 @@ requirements-dev.txt
 *.db*
 .eslintrc.*
 node_modules/
-package*

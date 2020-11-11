@@ -26,7 +26,7 @@ $(function () {
 
   fetch(`${url_base}/estacao`)
 
-    .then(function(response) {
+    .then(function getEstacoes(response) {
       var contentType = response.headers.get('content-type');
       if (contentType && contentType.indexOf("application/json") !== -1) {
 
@@ -50,7 +50,7 @@ $(function () {
       }
     }) // end fetch estacoes
 
-    .then(function(response) {
+    .then(function getSensores(response) {
       var contentType = response.headers.get('content-type');
       if (contentType && contentType.indexOf("application/json") !== -1) {
 
@@ -74,7 +74,7 @@ $(function () {
       }
     }) // end fetch sensores
 
-    .then(function(response) {
+    .then(function getParams(response) {
       var contentType = response.headers.get('content-type');
       if (contentType && contentType.indexOf("application/json") !== -1) {
 
@@ -119,6 +119,10 @@ $(function () {
             // set up the updating of the chart each second
             setInterval(function () {
 
+              $('#param-sel').change(function() {
+                param = this.value;
+              });
+
               fetch(`${url_base}/sensor/${sensor_id}/${param}/last`)
               .then(function(response) {
                 var contentType = response.headers.get('content-type');
@@ -130,9 +134,9 @@ $(function () {
                     var x = json.resource.datahora * 1000;
                     var y = parseFloat(json.resource.valor);
 
-                      console.log(param, x, y);
-                      serie.addPoint([x, y], true, true);
-                    });
+                    console.log(param, x, y);
+                    serie.addPoint([x, y], true, true);
+                  });
                 }
               });
             }, 5000);

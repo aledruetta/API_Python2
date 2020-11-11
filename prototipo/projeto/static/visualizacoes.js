@@ -26,7 +26,7 @@ $(function () {
 
   fetch(`${url_base}/estacao`)
 
-    .then(function(response) {
+    .then(function getEstacoes(response) {
       var contentType = response.headers.get('content-type');
       if (contentType && contentType.indexOf("application/json") !== -1) {
 
@@ -50,7 +50,7 @@ $(function () {
       }
     }) // end fetch estacoes
 
-    .then(function(response) {
+    .then(function getSensores(response) {
       var contentType = response.headers.get('content-type');
       if (contentType && contentType.indexOf("application/json") !== -1) {
 
@@ -74,7 +74,7 @@ $(function () {
       }
     }) // end fetch sensores
 
-    .then(function(response) {
+    .then(function getParams(response) {
       var contentType = response.headers.get('content-type');
       if (contentType && contentType.indexOf("application/json") !== -1) {
 
@@ -93,6 +93,7 @@ $(function () {
           });
 
           return {
+            tipo: 'area',
             param: params[0],
             sensor_id: json.resource.id
           };
@@ -102,22 +103,34 @@ $(function () {
     }) // end fetch params
 
     .then(function(json) {
-      var chart = createHighchart('area', json.param, json.sensor_id);
+      const chart = createHighchart(json.tipo, json.param, json.sensor_id);
+      chart.update({
+        series: { name: json.param }
+      });
     });
 
-  function createHighchart (type, param, sensor_id) {
+
+  function createHighchart (tipo, param, sensor_id) {
     return Highcharts.chart('container', {
       chart: {
-        type: type,
+        type: tipo,
         animation: Highcharts.svg, // don't animate in old IE
         marginRight: 10,
         events: {
           load: function () {
 
             var serie = this.series[0];
+            var self = this;
 
             // set up the updating of the chart each second
             setInterval(function () {
+
+              $('#param-sel').change(function() {
+                param = this.value;
+                serie.update({
+                  name: param
+                });
+              });
 
               fetch(`${url_base}/sensor/${sensor_id}/${param}/last`)
               .then(function(response) {
@@ -130,9 +143,9 @@ $(function () {
                     var x = json.resource.datahora * 1000;
                     var y = parseFloat(json.resource.valor);
 
-                      console.log(param, x, y);
-                      serie.addPoint([x, y], true, true);
-                    });
+                    console.log(param, x, y);
+                    serie.addPoint([x, y], true, true);
+                  });
                 }
               });
             }, 5000);
@@ -146,7 +159,7 @@ $(function () {
       },
 
       title: {
-          text: 'Live random data'
+          text: null
       },
 
       accessibility: {
@@ -192,7 +205,7 @@ $(function () {
       },
 
       series: [{
-        name: 'Random data',
+        name: null,
         data: (function () {
           // generate an array of random data
           var data = [],

@@ -1,40 +1,18 @@
 $(function () {
 
-  /*
-
-    fetch estacoes
-      then
-        return response
-      then
-        vaciar listas
-        popular lista estacoes
-        return fetch sensores
-      then
-        return response
-      then
-        popular lista sensores
-        return fetch params
-      then
-        return response
-      then
-        popular lista params
-        criar highchart
-
-   */
-
-  var url_base = "/api/v1.1";
+  const url_base = "/api/v1.1";
 
   fetch(`${url_base}/estacao`)
 
     .then(function getEstacoes(response) {
-      var contentType = response.headers.get('content-type');
+      let contentType = response.headers.get('content-type');
       if (contentType && contentType.indexOf("application/json") !== -1) {
 
         return response.json()
         .then(function(json) {
           $('#local-sel').empty();
 
-          var estacoes = json.resources;
+          let estacoes = json.resources;
           estacoes.forEach(function(estacao) {
             $('#local-sel')
               .append($('<option></option>')
@@ -43,7 +21,7 @@ $(function () {
               );
           });
 
-          var estacao = estacoes[0];
+          let estacao = estacoes[0];
 
           return fetch(`${url_base}/estacao/${estacao.id}/sensor`);
         });
@@ -51,14 +29,14 @@ $(function () {
     }) // end fetch estacoes
 
     .then(function getSensores(response) {
-      var contentType = response.headers.get('content-type');
+      let contentType = response.headers.get('content-type');
       if (contentType && contentType.indexOf("application/json") !== -1) {
 
         return response.json()
         .then(function(json) {
           $('#sensor-sel').empty();
 
-          var sensores = json.resources;
+          let sensores = json.resources;
           sensores.forEach(function(sensor) {
             $('#sensor-sel')
             .append($('<option></option>')
@@ -67,7 +45,7 @@ $(function () {
             );
           });
 
-          var sensor = sensores[0];
+          let sensor = sensores[0];
 
           return fetch(`${url_base}/estacao/${sensor.estacao_id}/sensor/${sensor.id}`);
         });
@@ -75,7 +53,7 @@ $(function () {
     }) // end fetch sensores
 
     .then(function getParams(response) {
-      var contentType = response.headers.get('content-type');
+      let contentType = response.headers.get('content-type');
       if (contentType && contentType.indexOf("application/json") !== -1) {
 
         return response.json()
@@ -93,7 +71,7 @@ $(function () {
           });
 
           return {
-            tipo: 'area',
+            tipo: 'spline',
             param: params[0],
             sensor_id: json.resource.id
           };
@@ -119,8 +97,7 @@ $(function () {
         events: {
           load: function () {
 
-            var serie = this.series[0];
-            var self = this;
+            let serie = this.series[0];
 
             // set up the updating of the chart each second
             setInterval(function () {
@@ -134,14 +111,14 @@ $(function () {
 
               fetch(`${url_base}/sensor/${sensor_id}/${param}/last`)
               .then(function(response) {
-                var contentType = response.headers.get('content-type');
+                let contentType = response.headers.get('content-type');
                 if (contentType && contentType.indexOf("application/json") !== -1) {
 
                   return response.json()
                   .then(function(json) {
                     // seconds (python) to milliseconds (js)
-                    var x = json.resource.datahora * 1000;
-                    var y = parseFloat(json.resource.valor);
+                    let x = json.resource.datahora * 1000;
+                    let y = parseFloat(json.resource.valor);
 
                     console.log(param, x, y);
                     serie.addPoint([x, y], true, true);
@@ -208,7 +185,7 @@ $(function () {
         name: null,
         data: (function () {
           // generate an array of random data
-          var data = [],
+          let data = [],
             time = (new Date()).getTime(),
             i;
 
@@ -226,48 +203,3 @@ $(function () {
   }
 
 }); // end load document
-
-  /*
-  // Observa mudanças na lista de seleção
-  $('#origens').change(function() {
-    //
-    // Recupera a lista de sensores da estação selecionada
-    fetch(`${url_base}/estacao/${this.value}/sensor`)
-      .then(function(response) {
-        var contentType = response.headers.get('content-type');
-        if (contentType && contentType.indexOf("application/json") !== -1) {
-          return response.json()
-
-          // Atualiza o gráfico com a informação dos sensores
-          .then(function(json) {
-            sensores = json.resources;
-            sensores.forEach(function (sensor) {
-              sensor.params.split(",")
-                .forEach(function (param) {
-                  this.series.append({
-                    name: param,
-                    data: (function () {
-                        // generate an array of random data
-                        var data = [],
-                            time = (new Date()).getTime(),
-                            i;
-
-                        for (i = -50; i <= 0; i += 1) {
-                            let x = time + i * 1000;
-                            let y = 0;
-                            data.push({
-                                x: time + i * 1000,
-                                y: 0
-                            });
-                        }
-                        return data;
-                    }())
-                  });
-                });
-            });
-
-          });
-        }
-      });
-  });
-  */

@@ -2,17 +2,19 @@
 #include <ESP8266WiFi.h>
 #include <WiFiUdp.h>
 #include <DHT.h>
-//#include <OneWire.h>
-//#include <DallasTemperature.h>
+#include <OneWire.h>
+#include <DallasTemperature.h>
 
 #define DHTTYPE DHT11 // DHT11
 //#define DHTPin 4 // GPIo4 ou porta D2 do NodeMCU
 uint8_t DHTPin = D2;
 DHT dht(DHTPin, DHTTYPE);
  
-//#define ONE_WIRE_BUS 16 //GPI016 ou porta D0 do NodeMCU
-//OneWire oneWire(ONE_WIRE_BUS);
-//DallasTemperature sensors(&oneWire);
+#define ONE_WIRE_BUS 12 //GPI016 ou porta D0 do NodeMCU
+OneWire oneWire(ONE_WIRE_BUS);
+DallasTemperature sensors(&oneWire);
+DeviceAddress sensor1;
+
 #define NTP_OFFSET   60 * 60      // In seconds
 #define NTP_INTERVAL 60 * 1000    // In miliseconds
 #define NTP_ADDRESS  "europe.pool.ntp.org"
@@ -21,7 +23,7 @@ NTPClient timeClient(ntpUDP, NTP_ADDRESS, NTP_OFFSET, NTP_INTERVAL);
 
 const char *ssid     = "Katena's House";
 const char *password = "aruazI_sirC@13";
-const char *host     = "192.168.0.109";
+const char *host     = "192.168.0.108";
 const int   led      = D7;
 
 int    estacao  = 1;
@@ -29,7 +31,7 @@ int    ldrPin   = A0;
 int    tmp      = 80;
 int    ldrValor = 0;
 String data     = "";
-float  t, h;
+float  t, h, l, c;
 
 void setup() {
   timeClient.begin();
@@ -63,21 +65,26 @@ void setup() {
   Serial.println(WiFi.localIP());
   
   dht.begin();
+  sensors.begin();
 }
 
 void loop() {
-  ldrValor = 1024 - analogRead(ldrPin);
+  ldrValor = analogRead(ldrPin);
   Serial.print("Leitura: ");
   Serial.println(ldrValor);
   
   t = dht.readTemperature();
   h = dht.readHumidity();
-//  sensors.requestTemperatures();
+  l = 1024 - ldrValor;
+  sensors.requestTemperatures();
+  c = sensors.getTempC(sensor1);
   
   timeClient.update();
     
-  envia_dados(t, "temperatura", estacao);
-  envia_dados(h, "umidade", estacao);
+  envia_dados(t, "temp_ambiente", estacao);
+//  envia_dados(c, "temp_agua", estacao);
+  envia_dados(h, "umid_relativa", estacao);
+  envia_dados(l, "luminosidade", estacao);
 }
 
 void envia_dados(float valor, String tipo, int estacao) {
@@ -113,10 +120,10 @@ void envia_dados(float valor, String tipo, int estacao) {
   client.print(data);
   Serial.println(data);
 
-  delay(250); // Can be changed
+  delay(1000); // Can be changed
   if (client.connected()) { 
     client.stop();  // DISCONNECT FROM THE SERVER
   }
   Serial.println("closing connection");
-  delay(250);
+  delay(1000);
 }

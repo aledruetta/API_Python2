@@ -4,7 +4,10 @@ flask-restful
 flask-login
 flask-jwt
 flask-wtf
+Flask-Migrate
 wtforms[email]
 passlib
 numpy
 requests
+psycopg2-binary
+

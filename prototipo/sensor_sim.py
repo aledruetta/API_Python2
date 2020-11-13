@@ -143,7 +143,7 @@ def simular():
         for sensor, valores in zip_sensores:
             params = sensor.params.split(",")
             for param in params:
-                url = f"http://localhost:5000/api/v1.1/sensor/{sensor.id}/{param}"
+                url = f"http://192.168.0.13:5000/api/v1.1/sensor/{sensor.id}/{param}"
                 inicial = float(valores[param])
                 valor = inicial + random() * choice(LINSPACE)
                 leitura = Leitura(valor=valor, datahora=getDatahora())

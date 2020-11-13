@@ -1,7 +1,7 @@
 SHELL := /bin/bash
 
 run:
-	FLASK_APP=projeto/app FLASK_ENV=development flask run --port=0.0.0.0
+	FLASK_APP=projeto/app FLASK_ENV=development flask run --host=0.0.0.0
 
 install:
 	# python3 -m venv .venv

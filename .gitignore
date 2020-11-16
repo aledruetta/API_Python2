@@ -9,3 +9,4 @@ requirements-dev.txt
 .eslintrc.*
 node_modules/
 *.log
+*.egg-info/

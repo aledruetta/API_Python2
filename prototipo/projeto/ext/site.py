@@ -2,7 +2,7 @@ from flask import Blueprint, render_template
 from flask_login import login_required
 
 from .api.models import Estacao
-from .auth.models import User
+from .auth.models import UserAuth
 
 bp = Blueprint("site", __name__)
 
@@ -20,5 +20,5 @@ def index():
 @bp.route("/protected")
 @login_required
 def protected():
-    users = User.query.all()
+    users = UserAuth.query.all()
     return render_template("protected.html", title="Secret", users=users)

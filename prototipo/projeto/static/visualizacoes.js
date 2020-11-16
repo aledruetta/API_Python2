@@ -71,7 +71,7 @@ $(function () {
           });
 
           return {
-            tipo: 'spline',
+            tipo: 'areaspline',
             param: params[0],
             sensor_id: json.resource.id
           };

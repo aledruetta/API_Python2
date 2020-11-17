@@ -1,5 +1,5 @@
-venv/
-.venv/
+venv*/
+.venv*/
 .vscode/
 .vagrant/
 __pycache__/
@@ -9,3 +9,4 @@ requirements-dev.txt
 .eslintrc.*
 node_modules/
 *.log
+*.egg-info/

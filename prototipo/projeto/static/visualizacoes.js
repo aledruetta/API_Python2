@@ -192,7 +192,7 @@ $(function () {
           for (i = -18; i <= 0; i += 1) {
             data.push({
               x: time + i * 5000,
-              y: null
+              y: 0
             });
           }
           return data;

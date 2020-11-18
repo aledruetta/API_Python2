@@ -8,7 +8,7 @@ from wtforms.validators import DataRequired, Email, Length
 
 from projeto.ext.db import db
 
-from .models import User
+from .models import UserAuth
 
 bp = Blueprint("auth", __name__)
 
@@ -26,7 +26,7 @@ class LoginForm(FlaskForm):
 def login():
     form = LoginForm()
     if form.validate_on_submit():
-        user = User.query.filter_by(email=form.email.data).first()
+        user = UserAuth.query.filter_by(email=form.email.data).first()
         if user and sha256_crypt.verify(form.password.data, user.password):
             login_user(user)
             return redirect(url_for("site.index"))
@@ -41,7 +41,7 @@ def signup():
     form = LoginForm()
     if form.validate_on_submit():
         password = sha256_crypt.hash(form.password.data)
-        user = User(email=form.email.data, password=password)
+        user = UserAuth(email=form.email.data, password=password)
         db.session.add(user)
         db.session.commit()
         return redirect(url_for("site.index"))

@@ -1,23 +1,25 @@
 SHELL := /bin/bash
 
-run:
-	FLASK_APP=projeto/app FLASK_ENV=development flask run --host=0.0.0.0
-
 install:
-	# python3 -m venv .venv
-	# source .venv/bin/activate
-	pip install -e .
-	pip check
-
-install-dev:
-	pip install --upgrade pip
-	pip install -e .['dev'] --use-feature=2020-resolver
-	pip check
+	# ln -s /vagrant_data prototipo
+	# cd prototipo
+	python3 -m venv ~/.venv
+	( \
+		source ~/.venv/bin/activate; \
+		pip install -r requirements.txt; \
+		pip check; \
+	)
 
 initdb:
 	# flask db init
 	# flask db migrate
-	FLASK_APP=projeto/app flask db upgrade
+	FLASK_APP=projeto/app flask db upgrade; \
+
+shell:
+	FLASK_APP=projeto/app flask shell
+
+run:
+	FLASK_APP=projeto/app FLASK_ENV=development flask run --host=0.0.0.0
 
 clean:
 	@find . -name '*.py[co]' -exec rm --force {} \;
@@ -31,3 +33,5 @@ clean:
 	rm -rf htmlcov
 	rm -rf .tox/
 	rm -rf docs/_build
+	pip install -r requirements.txt
+	pip check

@@ -109,7 +109,7 @@ $(function () {
                 });
               });
 
-              fetch(`${url_base}/sensor/${sensor_id}/${param}/last`)
+              fetch(`${url_base}/sensor/${sensor_id}/${param}/1`)
               .then(function(response) {
                 let contentType = response.headers.get('content-type');
                 if (contentType && contentType.indexOf("application/json") !== -1) {
@@ -189,9 +189,9 @@ $(function () {
             time = (new Date()).getTime(),
             i;
 
-          for (i = -18; i <= 0; i += 1) {
+          for (i = -19; i <= 0; i += 1) {
             data.push({
-              x: time + i * 5000,
+              x: time + i * 10000,
               y: 0
             });
           }

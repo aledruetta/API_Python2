@@ -14,7 +14,7 @@ api.add_resource(ApiEstacaoIdSensorId,
 api.add_resource(ApiSensorIdParam,
                  "/api/v1.1/sensor/<int:sensor_id>/<string:param>")
 api.add_resource(ApiSensorIdParamLast,
-                 "/api/v1.1/sensor/<int:sensor_id>/<string:param>/last")
+                 "/api/v1.1/sensor/<int:sensor_id>/<string:param>/<int:qty>")
 
 
 def init_app(app):

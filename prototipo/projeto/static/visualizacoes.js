@@ -215,7 +215,7 @@ $(function () {
         name: null,
         data: (function () {
           // generate an array of random data
-          var data = [],
+          let data = [],
               time = (new Date()).getTime(),
               i;
 

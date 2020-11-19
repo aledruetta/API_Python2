@@ -217,5 +217,5 @@ class ApiSensorIdParamLast(Resource):
                 if leitura.param == param
             ]
             if leituras:
-                return {"resource": leituras[-qty]}
+                return {"resources": leituras[-qty:]}
         return {"error": "Recurso inexistente!"}

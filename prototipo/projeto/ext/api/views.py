@@ -209,7 +209,7 @@ class ApiSensorIdParam(Resource):
 
 
 class ApiSensorIdParamLast(Resource):
-    def get(self, sensor_id, param):
+    def get(self, sensor_id, param, qty):
         sensor = Sensor.query.get(sensor_id)
         if sensor:
             leituras = [
@@ -217,5 +217,5 @@ class ApiSensorIdParamLast(Resource):
                 if leitura.param == param
             ]
             if leituras:
-                return {"resource": leituras[-1]}
+                return {"resources": leituras[-qty:]}
         return {"error": "Recurso inexistente!"}

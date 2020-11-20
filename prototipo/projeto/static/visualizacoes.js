@@ -1,8 +1,9 @@
 $(function () {
 
-  const url_base = "/api/v1.1";
+  const URL_BASE = "/api/v1.1";
+  const TIME_UPDATE = 10000;
 
-  fetch(`${url_base}/estacao`)
+  fetch(`${URL_BASE}/estacao`)
 
     .then(function getEstacoes(response) {
       let contentType = response.headers.get('content-type');
@@ -23,7 +24,7 @@ $(function () {
 
           let estacao = estacoes[0];
 
-          return fetch(`${url_base}/estacao/${estacao.id}/sensor`);
+          return fetch(`${URL_BASE}/estacao/${estacao.id}/sensor`);
         });
       }
     }) // end fetch estacoes
@@ -47,7 +48,7 @@ $(function () {
 
           let sensor = sensores[0];
 
-          return fetch(`${url_base}/estacao/${sensor.estacao_id}/sensor/${sensor.id}`);
+          return fetch(`${URL_BASE}/estacao/${sensor.estacao_id}/sensor/${sensor.id}`);
         });
       }
     }) // end fetch sensores
@@ -61,7 +62,7 @@ $(function () {
 
           $('#param-sel').empty();
 
-          params = json.resource.params.split(",");
+          let params = json.resource.params.split(",");
           params.forEach(function(param) {
             $('#param-sel')
             .append($('<option></option>')
@@ -70,20 +71,48 @@ $(function () {
             );
           });
 
+          let param = params[0];
+          let sensor_id = json.resource.id;
+
+          return fetch(`${URL_BASE}/sensor/${sensor_id}/${param}/20`);
+        });
+      }
+    })  // end fetch params
+
+    .then(function getLeituras(response) {
+      let contentType = response.headers.get('content-type');
+      if (contentType && contentType.indexOf("application/json") !== -1) {
+
+        return response.json()
+        .then(function(json) {
+
           return {
             tipo: 'areaspline',
-            param: params[0],
-            sensor_id: json.resource.id
+            param: json.resources[0].param,
+            sensor_id: json.resources[0].sensor_id,
+            leituras: json.resources
           };
 
         });
       }
-    }) // end fetch params
+    }) // end fetch leituras
 
-    .then(function(json) {
+    .then(function setCharts(json) {
+
+      let data = [];
+
+      for (let i = -19; i <= 0; i += 1) {
+        data.push({
+          x: json.leituras[19+i].datahora,
+          y: json.leituras[19+i].valor
+        });
+      }
+
       const chart = createHighchart(json.tipo, json.param, json.sensor_id);
       chart.update({
-        series: { name: json.param }
+        series: {
+          name: json.param,
+        }
       });
     });
 
@@ -91,25 +120,26 @@ $(function () {
   function createHighchart (tipo, param, sensor_id) {
     return Highcharts.chart('container', {
       chart: {
+
         type: tipo,
         animation: Highcharts.svg, // don't animate in old IE
         marginRight: 10,
         events: {
-          load: function () {
 
-            let serie = this.series[0];
+          load: function () {
+            const series = this.series[0];
 
             // set up the updating of the chart each second
             setInterval(function () {
 
               $('#param-sel').change(function() {
                 param = this.value;
-                serie.update({
+                series.update({
                   name: param
                 });
               });
 
-              fetch(`${url_base}/sensor/${sensor_id}/${param}/last`)
+              fetch(`${URL_BASE}/sensor/${sensor_id}/${param}/1`)
               .then(function(response) {
                 let contentType = response.headers.get('content-type');
                 if (contentType && contentType.indexOf("application/json") !== -1) {
@@ -117,15 +147,15 @@ $(function () {
                   return response.json()
                   .then(function(json) {
                     // seconds (python) to milliseconds (js)
-                    let x = json.resource.datahora * 1000;
-                    let y = parseFloat(json.resource.valor);
+                    let x = json.resources[0].datahora * 1000;
+                    let y = parseFloat(json.resources[0].valor);
 
                     console.log(param, x, y);
-                    serie.addPoint([x, y], true, true);
+                    series.addPoint([x, y], true, true);
                   });
                 }
               });
-            }, 10000);
+            }, TIME_UPDATE);
 
           }
         }
@@ -186,14 +216,14 @@ $(function () {
         data: (function () {
           // generate an array of random data
           let data = [],
-            time = (new Date()).getTime(),
-            i;
+              time = (new Date()).getTime(),
+              i;
 
-          for (i = -18; i <= 0; i += 1) {
-            data.push({
-              x: time + i * 5000,
-              y: 0
-            });
+          for (i = -19; i <= 0; i += 1) {
+              data.push({
+                  x: time + i * TIME_UPDATE,
+                  y: 0
+              });
           }
           return data;
         }()),

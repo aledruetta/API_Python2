@@ -1,7 +1,7 @@
 $(function () {
 
   const URL_BASE = "/api/v1.1";
-  const TIME_UPDATE = 10000;
+  const TIME_UPDATE = 10000;    // milliseconds
 
   fetch(`${URL_BASE}/estacao`)
 
@@ -87,7 +87,6 @@ $(function () {
         .then(function(json) {
 
           return {
-            tipo: 'areaspline',
             param: json.resources[0].param,
             sensor_id: json.resources[0].sensor_id,
             leituras: json.resources
@@ -101,32 +100,32 @@ $(function () {
 
       let data = [];
 
-      for (let i = -19; i <= 0; i += 1) {
+      for (let i = 0; i < 20; i += 1) {
         data.push({
-          x: json.leituras[19+i].datahora,
-          y: json.leituras[19+i].valor
+          x: json.leituras[i].datahora,
+          y: json.leituras[i].valor
         });
       }
 
-      const chart = createHighchart(json.tipo, json.param, json.sensor_id);
-      chart.update({
-        series: {
-          name: json.param,
-        }
-      });
+      const chart = createHighchart(json.param, json.sensor_id);
     });
 
 
-  function createHighchart (tipo, param, sensor_id) {
+  function createHighchart (param, sensor_id) {
     return Highcharts.chart('container', {
       chart: {
 
-        type: tipo,
+        type: 'areaspline',
         animation: Highcharts.svg, // don't animate in old IE
         marginRight: 10,
         events: {
 
           load: function () {
+            this.update({
+              series: {
+                name: param,
+              }
+            });
             const series = this.series[0];
 
             // set up the updating of the chart each second

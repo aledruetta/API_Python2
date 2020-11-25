@@ -83,34 +83,32 @@ $(function () {
     return await requestLeituras(sensor, param);
   }
 
-  let chart = new Highcharts.chart('container', {
-    chart: {
-      type: 'areaspline',
-      animation: Highcharts.svg, // don't animate in old IE
-      marginRight: 10,
-      events: {
-        load: function () {
-          const self = this;
+  requestData()
+    .then(function(leituras) {
 
-          requestData()
-            .then(function(leituras) {
+      let chartInitialData = [];
+      let time = (new Date()).getTime() * 1000;
+
+      for (let i=0; i<20; i++) {
+        let leitura = leituras[19-i];
+        chartInitialData.push({
+          x: time - i * TIME_UPDATE,
+          y: leitura.valor
+        });
+      }
+
+      let chart = new Highcharts.chart('container', {
+        chart: {
+          type: 'areaspline',
+          animation: Highcharts.svg, // don't animate in old IE
+          marginRight: 10,
+          events: {
+            load: function () {
 
               let param = leituras[0].param;
               let sensor_id = leituras[0].sensor_id;
 
-              let chartData = [];
-              let time = (new Date()).getTime() * 1000;
-
-              for (let i=0; i<20; i++) {
-                let leitura = leituras[19-i];
-                chartData.push({
-                  x: time - i * TIME_UPDATE,
-                  y: leitura.valor
-                });
-              }
-
-              const serie = self.series[0];
-              // serie.setData(chartData);
+              const serie = this.series[0];
 
               serie.update({
                 name: param
@@ -144,78 +142,94 @@ $(function () {
                 });
               }, TIME_UPDATE);
 
-            });
-        }
-      }
-    },
-
-    time: {
-      useUTC: false
-    },
-
-    title: {
-      text: null
-    },
-
-    accessibility: {
-      announceNewData: {
-        enabled: true,
-        minAnnounceInterval: 15000,
-        announcementFormatter: function (allSeries, newSeries, newPoint) {
-          if (newPoint) {
-              return 'New point added. Value: ' + newPoint.y;
+            }
           }
-          return false;
-        }
-      }
-    },
-
-    xAxis: {
-      type: 'datetime',
-      tickPixelInterval: 150
-    },
-
-    yAxis: {
-      title: {
-        text: 'Value'
-      },
-      plotLines: [{
-        value: 0,
-        width: 1,
-        color: '#808080'
-      }]
-    },
-
-    tooltip: {
-      headerFormat: '<b>{series.name}</b><br/>',
-      pointFormat: '{point.x:%Y-%m-%d %H:%M:%S}<br/>{point.y:.2f}'
-    },
-
-    legend: {
-      enabled: true
-    },
-
-    exporting: {
-      enabled: false
-    },
-
-    series: [{
-      name: null,
-      data: [{}],
-      fillColor: {
-        linearGradient: {
-          x1: 0,
-          y1: 0,
-          x2: 0,
-          y2: 1
         },
-        stops: [
-          [0, Highcharts.getOptions().colors[0]],
-          [1, Highcharts.color(Highcharts.getOptions().colors[0]).setOpacity(0).get('rgba')]
-        ]
-      }
-    }]
 
-  });
+        time: {
+          useUTC: false
+        },
+
+        title: {
+          text: null
+        },
+
+        accessibility: {
+          announceNewData: {
+            enabled: true,
+            minAnnounceInterval: 15000,
+            announcementFormatter: function (allSeries, newSeries, newPoint) {
+              if (newPoint) {
+                  return 'New point added. Value: ' + newPoint.y;
+              }
+              return false;
+            }
+          }
+        },
+
+        xAxis: {
+          type: 'datetime',
+          tickPixelInterval: 150
+        },
+
+        yAxis: {
+          title: {
+            text: 'Value'
+          },
+          plotLines: [{
+            value: 0,
+            width: 1,
+            color: '#808080'
+          }]
+        },
+
+        tooltip: {
+          headerFormat: '<b>{series.name}</b><br/>',
+          pointFormat: '{point.x:%Y-%m-%d %H:%M:%S}<br/>{point.y:.2f}'
+        },
+
+        legend: {
+          enabled: true
+        },
+
+        exporting: {
+          enabled: false
+        },
+
+        series: [{
+          name: null,
+          data: (function () {
+            // generate an array of random data
+            var data = [],
+              time = (new Date()).getTime(),
+              i;
+
+            for (i = -19; i <= 0; i += 1) {
+              data.push({
+                  x: time + i * TIME_UPDATE,
+                  y: 0
+              });
+            }
+            return data;
+          }()),
+          fillColor: {
+            linearGradient: {
+              x1: 0,
+              y1: 0,
+              x2: 0,
+              y2: 1
+            },
+            stops: [
+              [0, Highcharts.getOptions().colors[0]],
+              [1, Highcharts.color(Highcharts.getOptions().colors[0]).setOpacity(0).get('rgba')]
+            ]
+          }
+        }]
+
+      });
+
+      // chart.series[0].setData(chartInitialData);
+
+    });
 
 }); // end load document

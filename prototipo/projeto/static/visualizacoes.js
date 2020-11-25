@@ -8,19 +8,7 @@ $(function () {
 
     if (result.ok) {
       const data = await result.json();
-
-      $('#local-sel').empty();
-
-      let estacoes = data.resources;
-      estacoes.forEach(function(estacao) {
-        $('#local-sel')
-          .append($('<option></option>')
-            .val(estacao.id)
-            .text(`${estacao.local}#${estacao.id}`)
-          );
-      });
-
-      return estacoes[0];
+      return data.resources;
     }
   }
 
@@ -29,19 +17,7 @@ $(function () {
 
     if (result.ok) {
       const data = await result.json();
-
-      $('#sensor-sel').empty();
-
-      let sensores = data.resources;
-      sensores.forEach(function(sensor) {
-        $('#sensor-sel')
-        .append($('<option></option>')
-          .val(sensor.id)
-          .text(`${sensor.tipo}#${sensor.id}`)
-        );
-      });
-
-      return sensores[0];
+      return data.resources;
     }
   }
 
@@ -50,19 +26,7 @@ $(function () {
 
     if (result.ok) {
       const data = await result.json();
-
-      $('#param-sel').empty();
-
-      let params = data.resource.params.split(",");
-      params.forEach(function(param) {
-        $('#param-sel')
-        .append($('<option></option>')
-          .val(param)
-          .text(`${param}`)
-        );
-      });
-
-      return params[0];
+      return data.resource.params.split(",");
     }
   }
 
@@ -71,16 +35,49 @@ $(function () {
 
     if (result.ok) {
       const data = await result.json();
-
       return data.resources;
     }
   }
 
   async function requestData() {
-    const estacao = await requestEstacoes();
-    const sensor = await requestSensores(estacao);
-    const param = await requestParams(estacao, sensor);
-    return await requestLeituras(sensor, param);
+    const estacoes = await requestEstacoes();
+    const sensores = await requestSensores(estacoes[0]);
+    const params = await requestParams(estacoes[0], sensores[0]);
+
+    updateSelects(estacoes, sensores, params);
+
+    return await requestLeituras(sensores[0], params[0]);
+  }
+
+  function updateSelects(estacoes, sensores, params) {
+
+    $('#local-sel').empty();
+    estacoes.forEach(function(estacao) {
+      $('#local-sel')
+        .append($('<option></option>')
+          .val(estacao.id)
+          .text(`${estacao.local}#${estacao.id}`)
+        );
+    });
+
+    $('#sensor-sel').empty();
+    sensores.forEach(function(sensor) {
+      $('#sensor-sel')
+      .append($('<option></option>')
+        .val(sensor.id)
+        .text(`${sensor.tipo}#${sensor.id}`)
+      );
+    });
+
+    $('#param-sel').empty();
+    params.forEach(function(param) {
+      $('#param-sel')
+      .append($('<option></option>')
+        .val(param)
+        .text(`${param}`)
+      );
+    });
+
   }
 
   requestData()
@@ -89,10 +86,12 @@ $(function () {
       let chartInitialData = [];
       let time = (new Date()).getTime() * 1000;
 
+      // antigo 0 -> novo 19
+
       for (let i=0; i<20; i++) {
-        let leitura = leituras[19-i];
+        let leitura = leituras[i];
         chartInitialData.push({
-          x: time - i * TIME_UPDATE,
+          x: time - (19-i) * TIME_UPDATE,
           y: leitura.valor
         });
       }
@@ -109,9 +108,8 @@ $(function () {
               let sensor_id = leituras[0].sensor_id;
 
               const serie = this.series[0];
-
               serie.update({
-                name: param
+                name: param,
               });
 
               // set up the updating of the chart each second
@@ -198,6 +196,7 @@ $(function () {
 
         series: [{
           name: null,
+          // data: chartInitialData,
           data: (function () {
             // generate an array of random data
             var data = [],
@@ -227,8 +226,6 @@ $(function () {
         }]
 
       });
-
-      // chart.series[0].setData(chartInitialData);
 
     });
 

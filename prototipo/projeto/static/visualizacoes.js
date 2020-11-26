@@ -64,19 +64,18 @@ $(function () {
   }
 
   /**
-   * Chama as funções assíncronas e retorna uma lista de objetos JSON com as
-   * últimas 20 leituras da primeira estação, sensor e parâmetro de leitura.
-   * Esses dados serão usados para o gráfico inicial, antes do usuário fazer
-   * a sua seleção.
+   * Chama as funções assíncronas e retorna um objeto JSON com as listas de
+   * estações, sensores da primeira estação e parâmetros do primeiro sensor
+   * da primeira estação.
+   * Essas listas serão usadas para popular os menus de seleção drop-down e
+   * para o gráfico inicial.
    */
   async function requestData() {
     const estacoes = await requestEstacoes();
     const sensores = await requestSensores(estacoes[0]);
     const params = await requestParams(estacoes[0], sensores[0]);
 
-    updateSelects(estacoes, sensores, params);
-
-    return await requestLeituras(sensores[0], params[0]);
+    return {estacoes, sensores, params};
   }
 
   /**
@@ -118,20 +117,12 @@ $(function () {
      * Inicializa o objeto Highcharts com os dados assícronos fornecidos
      * por requestData.
      */
-    .then(function(leituras) {
+    .then(function(data) {
+      let estacoes = data.estacoes;
+      let sensores = data.sensores;
+      let params = data.params;
 
-      let chartInitialData = [];
-      let time = (new Date()).getTime() * 1000;
-
-      // antigo 0 -> novo 19
-
-      for (let i=0; i<20; i++) {
-        let leitura = leituras[i];
-        chartInitialData.push({
-          x: time - (19-i) * TIME_UPDATE,
-          y: leitura.valor
-        });
-      }
+      updateSelects(estacoes, sensores, params);
 
       let chart = new Highcharts.chart('container', {
         chart: {
@@ -141,8 +132,8 @@ $(function () {
           events: {
             load: function () {
 
-              let param = leituras[0].param;
-              let sensor_id = leituras[0].sensor_id;
+              let param = params[0];
+              let sensor_id = sensores[0].id;
 
               const serie = this.series[0];
               serie.update({

@@ -1,8 +1,20 @@
+/**
+ * file: visualizacoes.js
+ * library: highcharts.js
+ *
+ * Esse arquivo apresenta em tempo real e em formato de curva as leituras
+ * recebidas pela API dos sensores. Um menu de seleção permite mudar a
+ * origem dos dados segundo: local, sensor, parâmetro.
+ */
+
 $(function () {
 
   const URL_BASE = "/api/v1.1";
   const TIME_UPDATE = 10000;    // milliseconds
 
+  /**
+   * Retorna uma lista de objetos JSON com as infomações das estações cadastradas.
+   */
   async function requestEstacoes() {
     const result = await fetch(`${URL_BASE}/estacao`);
 
@@ -12,6 +24,10 @@ $(function () {
     }
   }
 
+  /**
+   * Retorna uma lista de objetos JSON com as infomações dos sensores
+   * da estação selecionada.
+   */
   async function requestSensores(estacao) {
     const result = await fetch(`${URL_BASE}/estacao/${estacao.id}/sensor`);
 
@@ -21,6 +37,10 @@ $(function () {
     }
   }
 
+  /**
+   * Retorna uma lista de strings representando os parâmetros de leitura do sensor
+   * selecionado.
+   */
   async function requestParams(estacao, sensor) {
     const result = await fetch(`${URL_BASE}/estacao/${estacao.id}/sensor/${sensor.id}`);
 
@@ -30,6 +50,10 @@ $(function () {
     }
   }
 
+  /**
+   * Retorna uma lista de objetos JSON com as últimas 20 leituras efetuadas
+   * pelo sensor para o parâmetro de leitura selecionado.
+   */
   async function requestLeituras(sensor, param) {
     const result = await fetch(`${URL_BASE}/sensor/${sensor.id}/${param}/20`);
 
@@ -39,6 +63,12 @@ $(function () {
     }
   }
 
+  /**
+   * Chama as funções assíncronas e retorna uma lista de objetos JSON com as
+   * últimas 20 leituras da primeira estação, sensor e parâmetro de leitura.
+   * Esses dados serão usados para o gráfico inicial, antes do usuário fazer
+   * a sua seleção.
+   */
   async function requestData() {
     const estacoes = await requestEstacoes();
     const sensores = await requestSensores(estacoes[0]);
@@ -49,6 +79,9 @@ $(function () {
     return await requestLeituras(sensores[0], params[0]);
   }
 
+  /**
+   * Inicializa os dados dos menus de seleção drop-down.
+   */
   function updateSelects(estacoes, sensores, params) {
 
     $('#local-sel').empty();
@@ -81,6 +114,10 @@ $(function () {
   }
 
   requestData()
+    /**
+     * Inicializa o objeto Highcharts com os dados assícronos fornecidos
+     * por requestData.
+     */
     .then(function(leituras) {
 
       let chartInitialData = [];

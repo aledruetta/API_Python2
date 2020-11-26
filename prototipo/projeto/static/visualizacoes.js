@@ -78,6 +78,27 @@ $(function () {
     return {estacoes, sensores, params};
   }
 
+  function updateChart(serie, sensor_id, param) {
+
+    fetch(`${URL_BASE}/sensor/${sensor_id}/${param}/1`)
+    .then(function(response) {
+      let contentType = response.headers.get('content-type');
+      if (contentType && contentType.indexOf("application/json") !== -1) {
+
+        return response.json()
+        .then(function(json) {
+          // seconds (python) to milliseconds (js)
+          let x = json.resources[0].datahora * 1000;
+          let y = parseFloat(json.resources[0].valor);
+
+          console.log(param, x, y);
+          serie.addPoint([x, y], true, true);
+        });
+      }
+    });
+
+  }
+
   /**
    * Inicializa os dados dos menus de seleção drop-down.
    */
@@ -150,22 +171,8 @@ $(function () {
                   });
                 });
 
-                fetch(`${URL_BASE}/sensor/${sensor_id}/${param}/1`)
-                .then(function(response) {
-                  let contentType = response.headers.get('content-type');
-                  if (contentType && contentType.indexOf("application/json") !== -1) {
+                updateChart(serie, sensor_id, param);
 
-                    return response.json()
-                    .then(function(json) {
-                      // seconds (python) to milliseconds (js)
-                      let x = json.resources[0].datahora * 1000;
-                      let y = parseFloat(json.resources[0].valor);
-
-                      console.log(param, x, y);
-                      serie.addPoint([x, y], true, true);
-                    });
-                  }
-                });
               }, TIME_UPDATE);
 
             }

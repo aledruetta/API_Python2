@@ -1,8 +1,20 @@
+/**
+ * file: visualizacoes.js
+ * library: highcharts.js
+ *
+ * Esse arquivo apresenta em tempo real e em formato de curva as leituras
+ * recebidas pela API dos sensores. Um menu de seleção permite mudar a
+ * origem dos dados segundo: local, sensor, parâmetro.
+ */
+
 $(function () {
 
   const URL_BASE = "/api/v1.1";
   const TIME_UPDATE = 10000;    // milliseconds
 
+  /**
+   * Retorna uma lista de objetos JSON com as infomações das estações cadastradas.
+   */
   async function requestEstacoes() {
     const result = await fetch(`${URL_BASE}/estacao`);
 
@@ -12,8 +24,12 @@ $(function () {
     }
   }
 
-  async function requestSensores(estacao) {
-    const result = await fetch(`${URL_BASE}/estacao/${estacao.id}/sensor`);
+  /**
+   * Retorna uma lista de objetos JSON com as infomações dos sensores
+   * da estação selecionada.
+   */
+  async function requestSensores(estacao_id) {
+    const result = await fetch(`${URL_BASE}/estacao/${estacao_id}/sensor`);
 
     if (result.ok) {
       const data = await result.json();
@@ -21,8 +37,12 @@ $(function () {
     }
   }
 
-  async function requestParams(estacao, sensor) {
-    const result = await fetch(`${URL_BASE}/estacao/${estacao.id}/sensor/${sensor.id}`);
+  /**
+   * Retorna uma lista de strings representando os parâmetros de leitura do sensor
+   * selecionado.
+   */
+  async function requestParams(estacao_id, sensor_id) {
+    const result = await fetch(`${URL_BASE}/estacao/${estacao_id}/sensor/${sensor_id}`);
 
     if (result.ok) {
       const data = await result.json();
@@ -30,8 +50,12 @@ $(function () {
     }
   }
 
-  async function requestLeituras(sensor, param) {
-    const result = await fetch(`${URL_BASE}/sensor/${sensor.id}/${param}/20`);
+  /**
+   * Retorna uma lista de objetos JSON com as últimas 20 leituras efetuadas
+   * pelo sensor para o parâmetro de leitura selecionado.
+   */
+  async function requestLeituras(sensor_id, param) {
+    const result = await fetch(`${URL_BASE}/sensor/${sensor_id}/${param}/20`);
 
     if (result.ok) {
       const data = await result.json();
@@ -39,62 +63,93 @@ $(function () {
     }
   }
 
+  /**
+   * Chama as funções assíncronas e retorna um objeto JSON com as listas de
+   * estações, sensores da primeira estação e parâmetros do primeiro sensor
+   * da primeira estação.
+   * Essas listas serão usadas para popular os menus de seleção drop-down e
+   * para o gráfico inicial.
+   */
   async function requestData() {
     const estacoes = await requestEstacoes();
-    const sensores = await requestSensores(estacoes[0]);
-    const params = await requestParams(estacoes[0], sensores[0]);
+    const sensores = await requestSensores(estacoes[0].id);
+    const params = await requestParams(estacoes[0].id, sensores[0].id);
 
-    updateSelects(estacoes, sensores, params);
-
-    return await requestLeituras(sensores[0], params[0]);
+    return {estacoes, sensores, params};
   }
 
+  function updateChart(serie, sensor_id, param) {
+
+    fetch(`${URL_BASE}/sensor/${sensor_id}/${param}/1`)
+    .then(function(response) {
+      let contentType = response.headers.get('content-type');
+      if (contentType && contentType.indexOf("application/json") !== -1) {
+
+        return response.json()
+        .then(function(json) {
+          // seconds (python) to milliseconds (js)
+          let x = json.resources[0].datahora * 1000;
+          let y = parseFloat(json.resources[0].valor);
+
+          console.log(param, x, y);
+          serie.addPoint([x, y], true, true);
+        });
+      }
+    });
+
+  }
+
+  /**
+   * Inicializa os dados dos menus de seleção drop-down.
+   */
   function updateSelects(estacoes, sensores, params) {
 
-    $('#local-sel').empty();
-    estacoes.forEach(function(estacao) {
-      $('#local-sel')
+    if (estacoes) {
+      $('#local-sel').empty();
+      estacoes.forEach(function(estacao) {
+        $('#local-sel')
+          .append($('<option></option>')
+            .val(estacao.id)
+            .text(`${estacao.local}#${estacao.id}`)
+          );
+      });
+    }
+
+    if (sensores) {
+      $('#sensor-sel').empty();
+      sensores.forEach(function(sensor) {
+        $('#sensor-sel')
         .append($('<option></option>')
-          .val(estacao.id)
-          .text(`${estacao.local}#${estacao.id}`)
+          .val(sensor.id)
+          .text(`${sensor.tipo}#${sensor.id}`)
         );
-    });
+      });
+    }
 
-    $('#sensor-sel').empty();
-    sensores.forEach(function(sensor) {
-      $('#sensor-sel')
-      .append($('<option></option>')
-        .val(sensor.id)
-        .text(`${sensor.tipo}#${sensor.id}`)
-      );
-    });
-
-    $('#param-sel').empty();
-    params.forEach(function(param) {
-      $('#param-sel')
-      .append($('<option></option>')
-        .val(param)
-        .text(`${param}`)
-      );
-    });
+    if (params) {
+      $('#param-sel').empty();
+      params.forEach(function(param) {
+        $('#param-sel')
+        .append($('<option></option>')
+          .val(param)
+          .text(`${param}`)
+        );
+      });
+    }
 
   }
 
   requestData()
-    .then(function(leituras) {
+    /**
+     * Inicializa o objeto Highcharts com os dados assícronos fornecidos
+     * por requestData.
+     */
+    .then(function(data) {
+      let estacoes = data.estacoes;
+      let sensores = data.sensores;
+      let params = data.params;
 
-      let chartInitialData = [];
-      let time = (new Date()).getTime() * 1000;
-
-      // antigo 0 -> novo 19
-
-      for (let i=0; i<20; i++) {
-        let leitura = leituras[i];
-        chartInitialData.push({
-          x: time - (19-i) * TIME_UPDATE,
-          y: leitura.valor
-        });
-      }
+      updateSelects(estacoes, sensores, params);
 
       let chart = new Highcharts.chart('container', {
         chart: {
@@ -104,8 +159,9 @@ $(function () {
           events: {
             load: function () {
 
-              let param = leituras[0].param;
-              let sensor_id = leituras[0].sensor_id;
+              let estacao_id = estacoes[0].id;
+              let sensor_id = sensores[0].id;
+              let param = params[0];
 
               const serie = this.series[0];
               serie.update({
@@ -115,6 +171,21 @@ $(function () {
               // set up the updating of the chart each second
               setInterval(function () {
 
+                $('#sensor-sel').change(function() {
+                  sensor_id = this.value;
+                  requestParams(estacao_id, sensor_id)
+                    .then(function(params) {
+
+                      params = params;
+                      param = params[0]
+                      serie.update({
+                        name: param
+                      });
+
+                      updateSelects(null, null, params);
+                    });
+                });
+
                 $('#param-sel').change(function() {
                   param = this.value;
                   serie.update({
@@ -122,22 +193,8 @@ $(function () {
                   });
                 });
 
-                fetch(`${URL_BASE}/sensor/${sensor_id}/${param}/1`)
-                .then(function(response) {
-                  let contentType = response.headers.get('content-type');
-                  if (contentType && contentType.indexOf("application/json") !== -1) {
+                updateChart(serie, sensor_id, param);
 
-                    return response.json()
-                    .then(function(json) {
-                      // seconds (python) to milliseconds (js)
-                      let x = json.resources[0].datahora * 1000;
-                      let y = parseFloat(json.resources[0].valor);
-
-                      console.log(param, x, y);
-                      serie.addPoint([x, y], true, true);
-                    });
-                  }
-                });
               }, TIME_UPDATE);
 
             }

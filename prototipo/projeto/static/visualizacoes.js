@@ -145,11 +145,7 @@ $(function () {
      * por requestData.
      */
     .then(function(data) {
-      let estacoes = data.estacoes;
-      let sensores = data.sensores;
-      let params = data.params;
-
-      updateSelects(estacoes, sensores, params);
+      updateSelects(data.estacoes, data.sensores, data.params);
 
       let chart = new Highcharts.chart('container', {
         chart: {
@@ -158,6 +154,9 @@ $(function () {
           marginRight: 10,
           events: {
             load: function () {
+              let estacoes = data.estacoes;
+              let sensores = data.sensores;
+              let params = data.params;
 
               let estacao_id = estacoes[0].id;
               let sensor_id = sensores[0].id;
@@ -168,33 +167,48 @@ $(function () {
                 name: param,
               });
 
+              $('#param-sel').change(function() {
+                param = this.value;
+                serie.update({
+                  name: param
+                });
+              });
+
+              $('#sensor-sel').change(function() {
+                sensor_id = this.value;
+                requestParams(estacao_id, sensor_id)
+                  .then(function(params_new) {
+
+                    params = params_new;
+                    param = params[0]
+                    serie.update({
+                      name: param
+                    });
+
+                    updateSelects(null, null, params);
+                  });
+              });
+
+              $('#local-sel').change(function() {
+                estacao_id = this.value;
+                requestSensores(estacao_id)
+                  .then(function(sensores_new) {
+
+                    sensores = sensores_new;
+                    sensor = sensores[0]
+                    params = sensor.params.split(",");
+                    param = params[0]
+                    serie.update({
+                      name: param
+                    });
+
+                    updateSelects(null, sensores, params);
+                  });
+              });
+
               // set up the updating of the chart each second
               setInterval(function () {
-
-                $('#sensor-sel').change(function() {
-                  sensor_id = this.value;
-                  requestParams(estacao_id, sensor_id)
-                    .then(function(params) {
-
-                      params = params;
-                      param = params[0]
-                      serie.update({
-                        name: param
-                      });
-
-                      updateSelects(null, null, params);
-                    });
-                });
-
-                $('#param-sel').change(function() {
-                  param = this.value;
-                  serie.update({
-                    name: param
-                  });
-                });
-
                 updateChart(serie, sensor_id, param);
-
               }, TIME_UPDATE);
 
             }

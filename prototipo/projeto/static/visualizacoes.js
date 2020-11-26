@@ -28,8 +28,8 @@ $(function () {
    * Retorna uma lista de objetos JSON com as infomações dos sensores
    * da estação selecionada.
    */
-  async function requestSensores(estacao) {
-    const result = await fetch(`${URL_BASE}/estacao/${estacao.id}/sensor`);
+  async function requestSensores(estacao_id) {
+    const result = await fetch(`${URL_BASE}/estacao/${estacao_id}/sensor`);
 
     if (result.ok) {
       const data = await result.json();
@@ -41,8 +41,8 @@ $(function () {
    * Retorna uma lista de strings representando os parâmetros de leitura do sensor
    * selecionado.
    */
-  async function requestParams(estacao, sensor) {
-    const result = await fetch(`${URL_BASE}/estacao/${estacao.id}/sensor/${sensor.id}`);
+  async function requestParams(estacao_id, sensor_id) {
+    const result = await fetch(`${URL_BASE}/estacao/${estacao_id}/sensor/${sensor_id}`);
 
     if (result.ok) {
       const data = await result.json();
@@ -54,8 +54,8 @@ $(function () {
    * Retorna uma lista de objetos JSON com as últimas 20 leituras efetuadas
    * pelo sensor para o parâmetro de leitura selecionado.
    */
-  async function requestLeituras(sensor, param) {
-    const result = await fetch(`${URL_BASE}/sensor/${sensor.id}/${param}/20`);
+  async function requestLeituras(sensor_id, param) {
+    const result = await fetch(`${URL_BASE}/sensor/${sensor_id}/${param}/20`);
 
     if (result.ok) {
       const data = await result.json();
@@ -72,8 +72,8 @@ $(function () {
    */
   async function requestData() {
     const estacoes = await requestEstacoes();
-    const sensores = await requestSensores(estacoes[0]);
-    const params = await requestParams(estacoes[0], sensores[0]);
+    const sensores = await requestSensores(estacoes[0].id);
+    const params = await requestParams(estacoes[0].id, sensores[0].id);
 
     return {estacoes, sensores, params};
   }
@@ -104,32 +104,38 @@ $(function () {
    */
   function updateSelects(estacoes, sensores, params) {
 
-    $('#local-sel').empty();
-    estacoes.forEach(function(estacao) {
-      $('#local-sel')
+    if (estacoes) {
+      $('#local-sel').empty();
+      estacoes.forEach(function(estacao) {
+        $('#local-sel')
+          .append($('<option></option>')
+            .val(estacao.id)
+            .text(`${estacao.local}#${estacao.id}`)
+          );
+      });
+    }
+
+    if (sensores) {
+      $('#sensor-sel').empty();
+      sensores.forEach(function(sensor) {
+        $('#sensor-sel')
         .append($('<option></option>')
-          .val(estacao.id)
-          .text(`${estacao.local}#${estacao.id}`)
+          .val(sensor.id)
+          .text(`${sensor.tipo}#${sensor.id}`)
         );
-    });
+      });
+    }
 
-    $('#sensor-sel').empty();
-    sensores.forEach(function(sensor) {
-      $('#sensor-sel')
-      .append($('<option></option>')
-        .val(sensor.id)
-        .text(`${sensor.tipo}#${sensor.id}`)
-      );
-    });
-
-    $('#param-sel').empty();
-    params.forEach(function(param) {
-      $('#param-sel')
-      .append($('<option></option>')
-        .val(param)
-        .text(`${param}`)
-      );
-    });
+    if (params) {
+      $('#param-sel').empty();
+      params.forEach(function(param) {
+        $('#param-sel')
+        .append($('<option></option>')
+          .val(param)
+          .text(`${param}`)
+        );
+      });
+    }
 
   }
 
@@ -153,8 +159,9 @@ $(function () {
           events: {
             load: function () {
 
-              let param = params[0];
+              let estacao_id = estacoes[0].id;
               let sensor_id = sensores[0].id;
+              let param = params[0];
 
               const serie = this.series[0];
               serie.update({
@@ -163,6 +170,21 @@ $(function () {
 
               // set up the updating of the chart each second
               setInterval(function () {
+
+                $('#sensor-sel').change(function() {
+                  sensor_id = this.value;
+                  requestParams(estacao_id, sensor_id)
+                    .then(function(params) {
+
+                      params = params;
+                      param = params[0]
+                      serie.update({
+                        name: param
+                      });
+
+                      updateSelects(null, null, params);
+                    });
+                });
 
                 $('#param-sel').change(function() {
                   param = this.value;

@@ -168,33 +168,31 @@ $(function () {
                 name: param,
               });
 
+              $('#param-sel').change(function() {
+                param = this.value;
+                serie.update({
+                  name: param
+                });
+              });
+
+              $('#sensor-sel').change(function() {
+                sensor_id = this.value;
+                requestParams(estacao_id, sensor_id)
+                  .then(function(params) {
+
+                    params = params;
+                    param = params[0]
+                    serie.update({
+                      name: param
+                    });
+
+                    updateSelects(null, null, params);
+                  });
+              });
+
               // set up the updating of the chart each second
               setInterval(function () {
-
-                $('#sensor-sel').change(function() {
-                  sensor_id = this.value;
-                  requestParams(estacao_id, sensor_id)
-                    .then(function(params) {
-
-                      params = params;
-                      param = params[0]
-                      serie.update({
-                        name: param
-                      });
-
-                      updateSelects(null, null, params);
-                    });
-                });
-
-                $('#param-sel').change(function() {
-                  param = this.value;
-                  serie.update({
-                    name: param
-                  });
-                });
-
                 updateChart(serie, sensor_id, param);
-
               }, TIME_UPDATE);
 
             }

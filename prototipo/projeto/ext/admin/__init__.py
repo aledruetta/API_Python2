@@ -20,7 +20,8 @@ class AdminView(ModelView):
 
 
 class SensorView(AdminView):
-    form_excluded_columns = ['leituras',]
+    form_excluded_columns = ['leituras', ]
+
 
 admin = Admin(name='flaskapi', template_mode='bootstrap3')
 

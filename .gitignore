@@ -10,3 +10,4 @@ requirements-dev.txt
 node_modules/
 *.log
 *.egg-info/
+tilix.json

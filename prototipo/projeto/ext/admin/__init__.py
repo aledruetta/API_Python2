@@ -19,11 +19,14 @@ class AdminView(ModelView):
             return redirect(url_for("auth.login", next=request.url))
 
 
+class SensorView(AdminView):
+    form_excluded_columns = ['leituras',]
+
 admin = Admin(name='flaskapi', template_mode='bootstrap3')
 
 admin.add_view(AdminView(UserAuth, db.session))
 admin.add_view(AdminView(Estacao, db.session))
-admin.add_view(AdminView(Sensor, db.session))
+admin.add_view(SensorView(Sensor, db.session))
 
 
 def init_app(app):

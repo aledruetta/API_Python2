@@ -15,7 +15,7 @@ def create_app():
     app.config["JWT_AUTH_USERNAME_KEY"] = "email"
     app.config["JWT_AUTH_URL_RULE"] = "/token"
     app.config["JWT_EXPIRATION_DELTA"] = timedelta(seconds=3600)
-    app.config['FLASK_ADMIN_SWATCH'] = 'flatly'
+    app.config['FLASK_ADMIN_SWATCH'] = 'simplex'
 
     db.init_app(app)
     api.init_app(app)

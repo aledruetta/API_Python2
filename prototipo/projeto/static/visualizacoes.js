@@ -91,7 +91,7 @@ $(function () {
           let x = json.resources[0].datahora * 1000;
           let y = parseFloat(json.resources[0].valor);
 
-          console.log(sensor_id, param, x, y);
+          console.log(`#${sensor_id} ${param} [${x}, ${y}]`);
           serie.addPoint([x, y], true, true);
         });
       }

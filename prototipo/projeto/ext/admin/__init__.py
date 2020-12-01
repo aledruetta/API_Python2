@@ -5,7 +5,7 @@ from projeto.ext.db import db
 
 from .views import UserView, EstacaoView, SensorView
 
-admin = Admin(name='flaskapi', template_mode='bootstrap3')
+admin = Admin(name='FlaskAPI', template_mode='bootstrap3')
 
 
 def init_app(app):

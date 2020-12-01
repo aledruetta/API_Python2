@@ -19,14 +19,28 @@ class AdminView(ModelView):
             return redirect(url_for("auth.login", next=request.url))
 
 
+class UserView(AdminView):
+    column_sortable_list = ()
+
+
+class EstacaoView(AdminView):
+    column_list = ('id', 'local', 'latitude', 'longitude')
+    column_sortable_list = ()
+
+
 class SensorView(AdminView):
-    form_excluded_columns = ['leituras', ]
+    column_list = ('id', 'tipo', 'descricao', 'params', 'estacao')
+    column_sortable_list = ()
+
+    form_excluded_columns = [
+        'leituras',
+    ]
 
 
 admin = Admin(name='flaskapi', template_mode='bootstrap3')
 
-admin.add_view(AdminView(UserAuth, db.session))
-admin.add_view(AdminView(Estacao, db.session))
+admin.add_view(UserView(UserAuth, db.session))
+admin.add_view(EstacaoView(Estacao, db.session))
 admin.add_view(SensorView(Sensor, db.session))
 
 

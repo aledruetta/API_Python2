@@ -141,7 +141,7 @@ class ApiEstacaoIdSensorId(Resource):
         parser.add_argument("params", type=str)
 
         data = parser.parse_args()
-        estacao = Estacao.query.get(sensor_id)
+        estacao = Estacao.query.get(estacao_id)
 
         if estacao:
             sensor = estacao.get_sensor(sensor_id)
@@ -159,7 +159,7 @@ class ApiEstacaoIdSensorId(Resource):
 
     # @jwt_required()
     def delete(self, estacao_id, sensor_id):
-        estacao = Estacao.query.get(sensor_id)
+        estacao = Estacao.query.get(estacao_id)
 
         if estacao:
             sensor = estacao.get_sensor(sensor_id)

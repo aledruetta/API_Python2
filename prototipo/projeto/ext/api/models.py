@@ -15,6 +15,7 @@ class Estacao(db.Model):
         for sensor in self.sensores:
             if sensor.id == sensor_id:
                 return sensor
+        return None
 
     def json(self):
         return {
@@ -25,7 +26,7 @@ class Estacao(db.Model):
         }
 
     def __repr__(self):
-        return f"{self.local} [{self.latitude}, {self.longitude}]"
+        return f"{self.local}"
 
 
 class Sensor(db.Model):

@@ -52,7 +52,7 @@
 			"response": []
 		},
 		{
-			"name": "/api/v1.1/estacao",
+			"name": "/api/version/estacao",
 			"protocolProfileBehavior": {
 				"disabledSystemHeaders": {}
 			},
@@ -83,13 +83,13 @@
 					}
 				},
 				"url": {
-					"raw": "{{url}}/api/v1.1/estacao",
+					"raw": "{{url}}/api/{{version}}/estacao",
 					"host": [
 						"{{url}}"
 					],
 					"path": [
 						"api",
-						"v1.1",
+						"{{version}}",
 						"estacao"
 					]
 				}
@@ -97,7 +97,7 @@
 			"response": []
 		},
 		{
-			"name": "/api/v1.1/estacao/id/sensor",
+			"name": "/api/version/estacao/id/sensor",
 			"protocolProfileBehavior": {
 				"disabledSystemHeaders": {}
 			},
@@ -120,7 +120,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"tipo\": \"DHT-11\",\n    \"descricao\": \"Sensor de leitura de temperatura e umidade.\",\n    \"params\": \"temp,humidity\"\n}",
+					"raw": "{\n    \"tipo\": \"DHT-11\",\n    \"descricao\": \"Sensor de leitura de temperatura e umidade.\",\n    \"params\": \"temp_ambiente,umid_relativa\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -128,13 +128,13 @@
 					}
 				},
 				"url": {
-					"raw": "{{url}}/api/v1.1/estacao/4/sensor",
+					"raw": "{{url}}/api/{{version}}/estacao/4/sensor",
 					"host": [
 						"{{url}}"
 					],
 					"path": [
 						"api",
-						"v1.1",
+						"{{version}}",
 						"estacao",
 						"4",
 						"sensor"
@@ -144,7 +144,7 @@
 			"response": []
 		},
 		{
-			"name": "/api/v1.1/sensor/id/param",
+			"name": "/api/version/sensor/id/param",
 			"protocolProfileBehavior": {
 				"disabledSystemHeaders": {}
 			},
@@ -175,15 +175,15 @@
 					}
 				},
 				"url": {
-					"raw": "{{url}}/api/v1.1/sensor/4/temp_ambiente",
+					"raw": "{{url}}/api/{{version}}/sensor/11/temp_ambiente",
 					"host": [
 						"{{url}}"
 					],
 					"path": [
 						"api",
-						"v1.1",
+						"{{version}}",
 						"sensor",
-						"4",
+						"11",
 						"temp_ambiente"
 					]
 				}
@@ -191,18 +191,18 @@
 			"response": []
 		},
 		{
-			"name": "/api/v1.1/estacao",
+			"name": "/api/version/estacao",
 			"request": {
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "{{url}}/api/v1.1/estacao",
+					"raw": "{{url}}/api/{{version}}/estacao",
 					"host": [
 						"{{url}}"
 					],
 					"path": [
 						"api",
-						"v1.1",
+						"{{version}}",
 						"estacao"
 					]
 				}
@@ -210,40 +210,40 @@
 			"response": []
 		},
 		{
-			"name": "/api/v1.1/estacao/id",
+			"name": "/api/version/estacao/id",
 			"request": {
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "{{url}}/api/v1.1/estacao/4",
+					"raw": "{{url}}/api/{{version}}/estacao/3",
 					"host": [
 						"{{url}}"
 					],
 					"path": [
 						"api",
-						"v1.1",
+						"{{version}}",
 						"estacao",
-						"4"
+						"3"
 					]
 				}
 			},
 			"response": []
 		},
 		{
-			"name": "/api/v1.1/estacao/id/sensor",
+			"name": "/api/version/estacao/id/sensor",
 			"request": {
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "{{url}}/api/v1.1/estacao/4/sensor",
+					"raw": "{{url}}/api/{{version}}/estacao/3/sensor",
 					"host": [
 						"{{url}}"
 					],
 					"path": [
 						"api",
-						"v1.1",
+						"{{version}}",
 						"estacao",
-						"4",
+						"3",
 						"sensor"
 					]
 				}
@@ -251,40 +251,40 @@
 			"response": []
 		},
 		{
-			"name": "/api/v1.1/sensor/id",
+			"name": "/api/version/sensor/id",
 			"request": {
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "{{url}}/api/v1.1/sensor/10",
+					"raw": "{{url}}/api/{{version}}/sensor/11",
 					"host": [
 						"{{url}}"
 					],
 					"path": [
 						"api",
-						"v1.1",
+						"{{version}}",
 						"sensor",
-						"10"
+						"11"
 					]
 				}
 			},
 			"response": []
 		},
 		{
-			"name": "/api/v1.1/sensor/id/param",
+			"name": "/api/version/sensor/id/param",
 			"request": {
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "{{url}}/api/v1.1/sensor/10/temp_ambiente",
+					"raw": "{{url}}/api/{{version}}/sensor/11/temp_ambiente",
 					"host": [
 						"{{url}}"
 					],
 					"path": [
 						"api",
-						"v1.1",
+						"{{version}}",
 						"sensor",
-						"10",
+						"11",
 						"temp_ambiente"
 					]
 				}
@@ -292,21 +292,21 @@
 			"response": []
 		},
 		{
-			"name": "/api/v1.1/sensor/id/param/qty",
+			"name": "/api/version/sensor/id/param/qty",
 			"request": {
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "{{url}}/api/v1.1/sensor/1/temp_ambiente/5",
+					"raw": "{{url}}/api/{{version}}/sensor/9/altitude/5",
 					"host": [
 						"{{url}}"
 					],
 					"path": [
 						"api",
-						"v1.1",
+						"{{version}}",
 						"sensor",
-						"1",
-						"temp_ambiente",
+						"9",
+						"altitude",
 						"5"
 					]
 				}
@@ -314,7 +314,7 @@
 			"response": []
 		},
 		{
-			"name": "/api/v1.1/estacao/id",
+			"name": "/api/version/estacao/id",
 			"request": {
 				"method": "PUT",
 				"header": [
@@ -339,13 +339,13 @@
 					}
 				},
 				"url": {
-					"raw": "{{url}}/api/v1.1/estacao/4",
+					"raw": "{{url}}/api/{{version}}/estacao/4",
 					"host": [
 						"{{url}}"
 					],
 					"path": [
 						"api",
-						"v1.1",
+						"{{version}}",
 						"estacao",
 						"4"
 					]
@@ -354,7 +354,7 @@
 			"response": []
 		},
 		{
-			"name": "/api/v1.1/sensor/id",
+			"name": "/api/version/sensor/id",
 			"request": {
 				"method": "PUT",
 				"header": [
@@ -379,22 +379,22 @@
 					}
 				},
 				"url": {
-					"raw": "{{url}}/api/v1.1/sensor/10",
+					"raw": "{{url}}/api/{{version}}/sensor/9",
 					"host": [
 						"{{url}}"
 					],
 					"path": [
 						"api",
-						"v1.1",
+						"{{version}}",
 						"sensor",
-						"10"
+						"9"
 					]
 				}
 			},
 			"response": []
 		},
 		{
-			"name": "/api/v1.1/estacao/id",
+			"name": "/api/version/estacao/id",
 			"request": {
 				"auth": {
 					"type": "noauth"
@@ -413,15 +413,15 @@
 					}
 				],
 				"url": {
-					"raw": "{{url}}/api/v1.1/estacao/4",
+					"raw": "{{url}}/api/{{version}}/estacao/6",
 					"host": [
 						"{{url}}"
 					],
 					"path": [
 						"api",
-						"v1.1",
+						"{{version}}",
 						"estacao",
-						"4"
+						"6"
 					]
 				}
 			},
@@ -447,15 +447,15 @@
 					}
 				],
 				"url": {
-					"raw": "{{url}}/api/v1.1/sensor/10",
+					"raw": "{{url}}/api/{{version}}/sensor/1",
 					"host": [
 						"{{url}}"
 					],
 					"path": [
 						"api",
-						"v1.1",
+						"{{version}}",
 						"sensor",
-						"10"
+						"1"
 					]
 				}
 			},

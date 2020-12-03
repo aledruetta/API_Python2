@@ -1,4 +1,0 @@
-Flask
-pylint
-flask-bootstrap
-fontawesome

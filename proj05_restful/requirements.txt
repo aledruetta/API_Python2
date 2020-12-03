@@ -1,8 +1,0 @@
-Flask
-flask-sqlalchemy
-flask-restful
-pylint
-flask-bootstrap
-fontawesome
-isort
-black

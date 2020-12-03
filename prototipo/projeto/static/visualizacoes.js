@@ -9,7 +9,8 @@
 
 $(function () {
 
-  const URL_BASE = "/api/v1.1";
+  const versao = "v1.2"
+  const URL_BASE = `/api/${versao}`;
   const TIME_UPDATE = 10000;    // milliseconds
 
   /**

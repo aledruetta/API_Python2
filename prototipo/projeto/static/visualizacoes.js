@@ -42,7 +42,7 @@ $(function () {
    * selecionado.
    */
   async function requestParams(estacao_id, sensor_id) {
-    const result = await fetch(`${URL_BASE}/estacao/${estacao_id}/sensor/${sensor_id}`);
+    const result = await fetch(`${URL_BASE}/sensor/${sensor_id}`);
 
     if (result.ok) {
       const data = await result.json();

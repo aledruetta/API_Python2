@@ -3,9 +3,15 @@ from datetime import datetime
 from flask_jwt import jwt_required
 from flask_restful import Resource, reqparse
 
+from sqlalchemy.exc import IntegrityError
+from sqlalchemy.orm.exc import UnmappedInstanceError
+
 from projeto.ext.db import db
 
 from .models import Estacao, Sensor, Leitura
+
+HTTP_RESPONSE_CREATED = 201
+HTTP_RESPONSE_NOT_FOUND = 404
 
 
 class ApiEstacao(Resource):
@@ -14,7 +20,7 @@ class ApiEstacao(Resource):
         data = [estacao.json() for estacao in estacoes]
         return {"resources": data}
 
-    # @jwt_required()
+    @jwt_required()
     def post(self):
         parser = reqparse.RequestParser()
         parser.add_argument("local",
@@ -40,19 +46,19 @@ class ApiEstacao(Resource):
 
         db.session.add(estacao)
         db.session.commit()
-
-        return {"created": estacao.json()}
+        return {"created": estacao.json()}, HTTP_RESPONSE_CREATED
 
 
 class ApiEstacaoId(Resource):
     def get(self, estacao_id):
-        estacao = Estacao.query.get(estacao_id)
-
-        if estacao:
+        try:
+            estacao = Estacao.query.get(estacao_id)
             return {"resource": estacao.json()}
-        return {"error": "Recurso inexistente!"}
 
-    # @jwt_required()
+        except AttributeError:
+            return {"error": "Recurso inexistente!"}, HTTP_RESPONSE_NOT_FOUND
+
+    @jwt_required()
     def put(self, estacao_id):
         parser = reqparse.RequestParser()
         parser.add_argument("local", type=str)
@@ -60,9 +66,10 @@ class ApiEstacaoId(Resource):
         parser.add_argument("longitude", type=str)
 
         data = parser.parse_args()
-        estacao = Estacao.query.get(estacao_id)
 
-        if estacao:
+        try:
+            estacao = Estacao.query.get(estacao_id)
+
             estacao.local = data["local"] if data["local"] else estacao.local
             estacao.latitude = (data["latitude"]
                                 if data["latitude"] else estacao.latitude)
@@ -71,32 +78,35 @@ class ApiEstacaoId(Resource):
 
             db.session.add(estacao)
             db.session.commit()
-
             return {"updated": estacao.json()}
-        return {"error": "Recurso inexistente!"}
 
-    # @jwt_required()
+        except (AttributeError, IntegrityError):
+            return {"error": "Recurso inexistente!"}, HTTP_RESPONSE_NOT_FOUND
+
+    @jwt_required()
     def delete(self, estacao_id):
-        estacao = Estacao.query.get(estacao_id)
-
-        if estacao:
+        try:
+            estacao = Estacao.query.get(estacao_id)
             db.session.delete(estacao)
             db.session.commit()
-
             return {"deleted": estacao.json()}
-        return {"error": "Recurso inexistente!"}
+
+        except (IntegrityError, UnmappedInstanceError):
+            return {"error": "Recurso inexistente!"}, HTTP_RESPONSE_NOT_FOUND
 
 
 class ApiEstacaoIdSensor(Resource):
     def get(self, estacao_id):
-        estacao = Estacao.query.get(estacao_id)
-        if estacao:
+        try:
+            estacao = Estacao.query.get(estacao_id)
             sensores = estacao.sensores
             data = [sensor.json() for sensor in sensores]
             return {"resources": data}
-        return {"error": "Recurso inexistente!"}
 
-    # @jwt_required()
+        except AttributeError:
+            return {"error": "Recurso inexistente!"}, HTTP_RESPONSE_NOT_FOUND
+
+    @jwt_required()
     def post(self, estacao_id):
         parser = reqparse.RequestParser()
         parser.add_argument("tipo",
@@ -114,37 +124,42 @@ class ApiEstacaoIdSensor(Resource):
 
         data = parser.parse_args()
 
-        sensor = Sensor(tipo=data["tipo"],
-                        descricao=data["descricao"],
-                        params=data["params"],
-                        estacao_id=estacao_id)
+        try:
+            sensor = Sensor(tipo=data["tipo"],
+                            descricao=data["descricao"],
+                            params=data["params"],
+                            estacao_id=estacao_id)
 
-        db.session.add(sensor)
-        db.session.commit()
+            db.session.add(sensor)
+            db.session.commit()
 
-        return {"created": sensor.json()}
+            return {"created": sensor.json()}, HTTP_RESPONSE_CREATED
+
+        except IntegrityError:
+            return {"error": "Recurso inexistente!"}, HTTP_RESPONSE_NOT_FOUND
 
 
-class ApiEstacaoIdSensorId(Resource):
-    def get(self, estacao_id, sensor_id):
-        estacao = Estacao.query.get(estacao_id)
-        if estacao:
-            sensor = estacao.get_sensor(sensor_id)
+class ApiSensorId(Resource):
+    def get(self, sensor_id):
+        try:
+            sensor = Sensor.query.get(sensor_id)
             return {"resource": sensor.json()}
-        return {"error": "Recurso inexistente!"}
 
-    # @jwt_required()
-    def put(self, estacao_id, sensor_id):
+        except AttributeError:
+            return {"error": "Recurso inexistente!"}, HTTP_RESPONSE_NOT_FOUND
+
+    @jwt_required()
+    def put(self, sensor_id):
         parser = reqparse.RequestParser()
         parser.add_argument("tipo", type=str)
         parser.add_argument("descricao", type=str)
         parser.add_argument("params", type=str)
 
         data = parser.parse_args()
-        estacao = Estacao.query.get(estacao_id)
 
-        if estacao:
-            sensor = estacao.get_sensor(sensor_id)
+        try:
+            sensor = Sensor.query.get(sensor_id)
+
             sensor.tipo = data["tipo"] if data["tipo"] else sensor.tipo
             sensor.descricao = (data["descricao"]
                                 if data["descricao"] else sensor.descricao)
@@ -155,33 +170,36 @@ class ApiEstacaoIdSensorId(Resource):
             db.session.commit()
 
             return {"updated": sensor.json()}
-        return {"error": "Recurso inexistente!"}
 
-    # @jwt_required()
-    def delete(self, estacao_id, sensor_id):
-        estacao = Estacao.query.get(estacao_id)
+        except (AttributeError, IntegrityError):
+            return {"error": "Recurso inexistente!"}, HTTP_RESPONSE_NOT_FOUND
 
-        if estacao:
-            sensor = estacao.get_sensor(sensor_id)
+    @jwt_required()
+    def delete(self, sensor_id):
+        try:
+            sensor = Sensor.query.get(sensor_id)
             db.session.delete(sensor)
             db.session.commit()
-
             return {"deleted": sensor.json()}
-        return {"error": "Recurso inexistente!"}
+
+        except (IntegrityError, UnmappedInstanceError):
+            return {"error": "Recurso inexistente!"}, HTTP_RESPONSE_NOT_FOUND
 
 
 class ApiSensorIdParam(Resource):
     def get(self, sensor_id, param):
-        sensor = Sensor.query.get(sensor_id)
-        if sensor:
+        try:
+            sensor = Sensor.query.get(sensor_id)
             leituras = [
                 leitura.json() for leitura in sensor.leituras
                 if leitura.param == param
             ]
             return {"resource": leituras}
-        return {"error": "Recurso inexistente!"}
 
-    # @jwt_required()
+        except AttributeError:
+            return {"error": "Recurso inexistente!"}, HTTP_RESPONSE_NOT_FOUND
+
+    @jwt_required()
     def post(self, sensor_id, param):
         parser = reqparse.RequestParser()
         parser.add_argument("valor",
@@ -197,25 +215,32 @@ class ApiSensorIdParam(Resource):
 
         datahora = datetime.fromtimestamp(int(data["datahora"]))
 
-        leitura = Leitura(datahora=datahora,
-                          valor=data["valor"],
-                          param=param,
-                          sensor_id=sensor_id)
+        try:
+            leitura = Leitura(datahora=datahora,
+                              valor=data["valor"],
+                              param=param,
+                              sensor_id=sensor_id)
 
-        db.session.add(leitura)
-        db.session.commit()
+            db.session.add(leitura)
+            db.session.commit()
+            return {"created": leitura.json()}, HTTP_RESPONSE_CREATED
 
-        return {"created": leitura.json()}
+        except IntegrityError:
+            return {"error": "Recurso inexistente!"}, HTTP_RESPONSE_NOT_FOUND
 
 
 class ApiSensorIdParamLast(Resource):
     def get(self, sensor_id, param, qty):
-        sensor = Sensor.query.get(sensor_id)
-        if sensor:
+        try:
+            sensor = Sensor.query.get(sensor_id)
             leituras = [
                 leitura.json() for leitura in sensor.leituras
                 if leitura.param == param
             ]
-            if leituras:
-                return {"resources": leituras[-qty:]}
-        return {"error": "Recurso inexistente!"}
+            llen = len(leituras)
+            if llen > 0:
+                return {"resources": leituras[-min([qty, llen]):]}
+            return {"resources": []}
+
+        except AttributeError:
+            return {"error": "Recurso inexistente!"}, HTTP_RESPONSE_NOT_FOUND

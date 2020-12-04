@@ -4,10 +4,14 @@ from flask_jwt import jwt_required
 from flask_restful import Resource, reqparse
 
 from sqlalchemy.exc import IntegrityError
+from sqlalchemy.orm.exc import UnmappedInstanceError
 
 from projeto.ext.db import db
 
 from .models import Estacao, Sensor, Leitura
+
+HTTP_RESPONSE_CREATED = 201
+HTTP_RESPONSE_NOT_FOUND = 404
 
 
 class ApiEstacao(Resource):
@@ -16,7 +20,7 @@ class ApiEstacao(Resource):
         data = [estacao.json() for estacao in estacoes]
         return {"resources": data}
 
-    # @jwt_required()
+    @jwt_required()
     def post(self):
         parser = reqparse.RequestParser()
         parser.add_argument("local",
@@ -42,7 +46,7 @@ class ApiEstacao(Resource):
 
         db.session.add(estacao)
         db.session.commit()
-        return {"created": estacao.json()}
+        return {"created": estacao.json()}, HTTP_RESPONSE_CREATED
 
 
 class ApiEstacaoId(Resource):
@@ -52,9 +56,9 @@ class ApiEstacaoId(Resource):
             return {"resource": estacao.json()}
 
         except AttributeError:
-            return {"error": "Recurso inexistente!"}
+            return {"error": "Recurso inexistente!"}, HTTP_RESPONSE_NOT_FOUND
 
-    # @jwt_required()
+    @jwt_required()
     def put(self, estacao_id):
         parser = reqparse.RequestParser()
         parser.add_argument("local", type=str)
@@ -77,9 +81,9 @@ class ApiEstacaoId(Resource):
             return {"updated": estacao.json()}
 
         except (AttributeError, IntegrityError):
-            return {"error": "Recurso inexistente!"}
+            return {"error": "Recurso inexistente!"}, HTTP_RESPONSE_NOT_FOUND
 
-    # @jwt_required()
+    @jwt_required()
     def delete(self, estacao_id):
         try:
             estacao = Estacao.query.get(estacao_id)
@@ -87,8 +91,8 @@ class ApiEstacaoId(Resource):
             db.session.commit()
             return {"deleted": estacao.json()}
 
-        except IntegrityError:
-            return {"error": "Recurso inexistente!"}
+        except (IntegrityError, UnmappedInstanceError):
+            return {"error": "Recurso inexistente!"}, HTTP_RESPONSE_NOT_FOUND
 
 
 class ApiEstacaoIdSensor(Resource):
@@ -100,9 +104,9 @@ class ApiEstacaoIdSensor(Resource):
             return {"resources": data}
 
         except AttributeError:
-            return {"error": "Recurso inexistente!"}
+            return {"error": "Recurso inexistente!"}, HTTP_RESPONSE_NOT_FOUND
 
-    # @jwt_required()
+    @jwt_required()
     def post(self, estacao_id):
         parser = reqparse.RequestParser()
         parser.add_argument("tipo",
@@ -129,10 +133,10 @@ class ApiEstacaoIdSensor(Resource):
             db.session.add(sensor)
             db.session.commit()
 
-            return {"created": sensor.json()}
+            return {"created": sensor.json()}, HTTP_RESPONSE_CREATED
 
         except IntegrityError:
-            return {"error": "Recurso inexistente!"}
+            return {"error": "Recurso inexistente!"}, HTTP_RESPONSE_NOT_FOUND
 
 
 class ApiSensorId(Resource):
@@ -142,9 +146,9 @@ class ApiSensorId(Resource):
             return {"resource": sensor.json()}
 
         except AttributeError:
-            return {"error": "Recurso inexistente!"}
+            return {"error": "Recurso inexistente!"}, HTTP_RESPONSE_NOT_FOUND
 
-    # @jwt_required()
+    @jwt_required()
     def put(self, sensor_id):
         parser = reqparse.RequestParser()
         parser.add_argument("tipo", type=str)
@@ -168,9 +172,9 @@ class ApiSensorId(Resource):
             return {"updated": sensor.json()}
 
         except (AttributeError, IntegrityError):
-            return {"error": "Recurso inexistente!"}
+            return {"error": "Recurso inexistente!"}, HTTP_RESPONSE_NOT_FOUND
 
-    # @jwt_required()
+    @jwt_required()
     def delete(self, sensor_id):
         try:
             sensor = Sensor.query.get(sensor_id)
@@ -178,8 +182,8 @@ class ApiSensorId(Resource):
             db.session.commit()
             return {"deleted": sensor.json()}
 
-        except IntegrityError:
-            return {"error": "Recurso inexistente!"}
+        except (IntegrityError, UnmappedInstanceError):
+            return {"error": "Recurso inexistente!"}, HTTP_RESPONSE_NOT_FOUND
 
 
 class ApiSensorIdParam(Resource):
@@ -193,9 +197,9 @@ class ApiSensorIdParam(Resource):
             return {"resource": leituras}
 
         except AttributeError:
-            return {"error": "Recurso inexistente!"}
+            return {"error": "Recurso inexistente!"}, HTTP_RESPONSE_NOT_FOUND
 
-    # @jwt_required()
+    @jwt_required()
     def post(self, sensor_id, param):
         parser = reqparse.RequestParser()
         parser.add_argument("valor",
@@ -219,10 +223,10 @@ class ApiSensorIdParam(Resource):
 
             db.session.add(leitura)
             db.session.commit()
-            return {"created": leitura.json()}
+            return {"created": leitura.json()}, HTTP_RESPONSE_CREATED
 
         except IntegrityError:
-            return {"error": "Recurso inexistente!"}
+            return {"error": "Recurso inexistente!"}, HTTP_RESPONSE_NOT_FOUND
 
 
 class ApiSensorIdParamLast(Resource):
@@ -239,4 +243,4 @@ class ApiSensorIdParamLast(Resource):
             return {"resources": []}
 
         except AttributeError:
-            return {"error": "Recurso inexistente!"}
+            return {"error": "Recurso inexistente!"}, HTTP_RESPONSE_NOT_FOUND

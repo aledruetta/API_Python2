@@ -6,7 +6,7 @@
 #include <DallasTemperature.h>
 #include <Wire.h>
 #include <PubSubClient.h> // Importa a Biblioteca PubSubClien
- 
+
 //defines:
 //defines de id mqtt e tópicos para publicação e subscribe
 #define TOPICO_PUBLISH   "MQTTNodeMCUAnalogicoEnvia"    //tópico MQTT de envio de informações para Broker
@@ -15,13 +15,13 @@
                                                         //            chances de você controlar e monitorar o NodeMCU
                                                         //            de outra pessoa.
 #define ID_MQTT  "NodeMCUAnalogico"     //id mqtt (para identificação de sessão)
-                                        //IMPORTANTE: este deve ser único no broker (ou seja, 
-                                        //            se um client MQTT tentar entrar com o mesmo 
-                                        //            id de outro já conectado ao broker, o broker 
+                                        //IMPORTANTE: este deve ser único no broker (ou seja,
+                                        //            se um client MQTT tentar entrar com o mesmo
+                                        //            id de outro já conectado ao broker, o broker
                                         //            irá fechar a conexão de um deles).
- 
+
 #define TAMANHO_STRING_SERIAL      ((4*8) + 7 + 1)  //8 canais (de 4 bytes de informação cada, em ASCII) e 7 separadores (;) e terminador de string (\0)
- 
+
 #define ONE_WIRE_BUS1 D1
 OneWire oneWire1(ONE_WIRE_BUS1);
 DallasTemperature sensor0(&oneWire1);
@@ -29,7 +29,7 @@ DallasTemperature sensor0(&oneWire1);
 #define DHTTYPE DHT11 // DHT11
 uint8_t DHTPin = D2;
 DHT dht(DHTPin, DHTTYPE);
- 
+
 #define NTP_OFFSET   60 * 60      // In seconds
 #define NTP_INTERVAL 60 * 1000    // In miliseconds
 #define NTP_ADDRESS  "a.st1.ntp.br"
@@ -61,7 +61,7 @@ char StringLeiturasADC[TAMANHO_STRING_SERIAL];
 
 void initWiFi(void);
 void initMQTT(void);
-void reconectWiFi(void); 
+void reconectWiFi(void);
 //void mqtt_callback(char* topic, byte* payload, unsigned int length);
 //void VerificaConexoesWiFIEMQTT(void);
 bool VerificaSeHaInformacaoNaSerial(void);
@@ -98,11 +98,11 @@ void reconectWiFi() {
 void initMQTT() {
   MQTT.setServer(BROKER_MQTT, BROKER_PORT);   //informa qual broker e porta deve ser conectado
 }
- 
+
 void reconnectMQTT() {
-  if (!MQTT.connected()) 
+  if (!MQTT.connected())
   {
-    if (MQTT.connect(ID_MQTT)) 
+    if (MQTT.connect(ID_MQTT))
       Serial.println("Conectado ao MQTT");
     else
     {
@@ -123,7 +123,7 @@ void mqtt_callback(char* topic, byte* payload, unsigned int length) {
      char c = (char)payload[i];
      msg += c;
   }
- 
+
   if (msg.equals("L")) {
     digitalWrite(D0, LOW);
     EstadoSaida = '1';
@@ -144,18 +144,18 @@ void VerificaConexoesWiFIEMQTT(void) {
   else
     Serial.println("Conectado ao MQTT");
 }
- 
+
 bool VerificaSeHaInformacaoNaSerial() {
   char c;
   int  i;
-   
+
   if (Serial.available() <= 0)
     return false;
- 
+
   //há dados sendo recebidos. Limpa buffer de recepção:
-  memset(StringLeiturasADC, 0, TAMANHO_STRING_SERIAL);  
+  memset(StringLeiturasADC, 0, TAMANHO_STRING_SERIAL);
   //pega a string toda (até \0).
-  
+
   i = 0;
   do {
     c = Serial.read();
@@ -165,9 +165,9 @@ bool VerificaSeHaInformacaoNaSerial() {
     }
   } while (c != '\0');
   Serial.println("");
-  return true;  
+  return true;
 }
- 
+
 void EnviaInformacoesMQTT(void) {
   //MQTT.publish(TOPICO_PUBLISH, StringLeiturasADC);
   Serial.println(StringLeiturasADC);
@@ -216,18 +216,18 @@ void EnviaDados(float valor, String tipo, int estacao) {
   WiFiClient client;
   const int httpPort = 5000;
   timeClient.update();
-  
+
   if (!client.connect(host, httpPort)) {
     Serial.println("connection failed");
     return;
   }
-      
+
   String formattedTime    = timeClient.getFormattedTime();
   unsigned long epcohTime = timeClient.getEpochTime();
-  
+
   data = "{\"valor\": " + String(valor) + ", \"datahora\": " + String(epcohTime) + "}";
-  
-  client.println("POST /api/v1.1/sensor/" + String(estacao) + "/" + tipo + " HTTP/1.1");
+
+  client.println("POST /api/v1.2/sensor/" + String(estacao) + "/" + tipo + " HTTP/1.1");
   client.print("Host: ");
   client.println(host);
   client.println("Accept: */*");
@@ -239,7 +239,7 @@ void EnviaDados(float valor, String tipo, int estacao) {
   Serial.println(data);
 
   delay(20); // Can be changed
-  if (client.connected()) { 
+  if (client.connected()) {
     client.stop();  // DISCONNECT FROM THE SERVER
   }
   delay(20);
@@ -247,25 +247,25 @@ void EnviaDados(float valor, String tipo, int estacao) {
 
 void setup() {
   Serial.begin(115200);
-  
+
   // We start by connecting to a WiFi network
   initWiFi();
-  
+
   initMQTT();
-  
+
   sensor0.begin();
   //Serial.print(sensor0.getDeviceCount(), DEC);
   if (sensor0.getDeviceCount() == 0)
     Serial.println("Sensor temperatura da água não encontrado");
-  
+
   timeClient.begin();
-  
+
   pinMode(led,    OUTPUT);
   pinMode(ldrPin, INPUT);
   pinMode(DHTPin, INPUT);
 
   dht.begin();
-  
+
   digitalWrite(led, HIGH); // acende o LED
   delay(100);
   digitalWrite(led, LOW); // acende o LED
@@ -281,14 +281,14 @@ void setup() {
 
 void loop() {
 //    VerificaConexoesWiFIEMQTT();
-  
+
   //se recebeu informações pela serial, as envia por MQTT
   VerificaSeHaInformacaoNaSerial();
   EnviaInformacoesMQTT();
- 
+
   //keep=alive do MQTT
-//  MQTT.loop();  
-  
+//  MQTT.loop();
+
   sensor0.requestTemperatures();
   tempC1 = sensor0.getTempCByIndex(0);
 
@@ -311,6 +311,6 @@ void loop() {
   EnviaDados(h, "umid_relativa", estacao);
   Serial.print("Luminosidade:     ");
   EnviaDados(l, "luminosidade", estacao);
-  
+
   //ESP.reset();
 }

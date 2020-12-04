@@ -20,7 +20,7 @@ class ApiEstacao(Resource):
         data = [estacao.json() for estacao in estacoes]
         return {"resources": data}
 
-    # @jwt_required()
+    @jwt_required()
     def post(self):
         parser = reqparse.RequestParser()
         parser.add_argument("local",
@@ -58,7 +58,7 @@ class ApiEstacaoId(Resource):
         except AttributeError:
             return {"error": "Recurso inexistente!"}, HTTP_RESPONSE_NOT_FOUND
 
-    # @jwt_required()
+    @jwt_required()
     def put(self, estacao_id):
         parser = reqparse.RequestParser()
         parser.add_argument("local", type=str)
@@ -83,7 +83,7 @@ class ApiEstacaoId(Resource):
         except (AttributeError, IntegrityError):
             return {"error": "Recurso inexistente!"}, HTTP_RESPONSE_NOT_FOUND
 
-    # @jwt_required()
+    @jwt_required()
     def delete(self, estacao_id):
         try:
             estacao = Estacao.query.get(estacao_id)
@@ -106,7 +106,7 @@ class ApiEstacaoIdSensor(Resource):
         except AttributeError:
             return {"error": "Recurso inexistente!"}, HTTP_RESPONSE_NOT_FOUND
 
-    # @jwt_required()
+    @jwt_required()
     def post(self, estacao_id):
         parser = reqparse.RequestParser()
         parser.add_argument("tipo",
@@ -148,7 +148,7 @@ class ApiSensorId(Resource):
         except AttributeError:
             return {"error": "Recurso inexistente!"}, HTTP_RESPONSE_NOT_FOUND
 
-    # @jwt_required()
+    @jwt_required()
     def put(self, sensor_id):
         parser = reqparse.RequestParser()
         parser.add_argument("tipo", type=str)
@@ -174,7 +174,7 @@ class ApiSensorId(Resource):
         except (AttributeError, IntegrityError):
             return {"error": "Recurso inexistente!"}, HTTP_RESPONSE_NOT_FOUND
 
-    # @jwt_required()
+    @jwt_required()
     def delete(self, sensor_id):
         try:
             sensor = Sensor.query.get(sensor_id)
@@ -199,7 +199,7 @@ class ApiSensorIdParam(Resource):
         except AttributeError:
             return {"error": "Recurso inexistente!"}, HTTP_RESPONSE_NOT_FOUND
 
-    # @jwt_required()
+    @jwt_required()
     def post(self, sensor_id, param):
         parser = reqparse.RequestParser()
         parser.add_argument("valor",

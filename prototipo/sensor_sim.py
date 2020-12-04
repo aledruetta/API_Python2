@@ -25,6 +25,8 @@ MAX_SOM = 100
 MIN_PRES = 30
 MAX_PRES = 100
 
+VERSAO = "v1.2"
+
 
 def create_all():
     estacoes = [
@@ -143,7 +145,7 @@ def simular():
         for sensor, valores in zip_sensores:
             params = sensor.params.split(",")
             for param in params:
-                url = f"http://localhost:5000/api/v1.1/sensor/{sensor.id}/{param}"
+                url = f"http://localhost:5000/api/{VERSAO}/sensor/{sensor.id}/{param}"
                 inicial = float(valores[param])
                 valor = inicial + random() * choice(LINSPACE)
                 leitura = Leitura(valor=valor, datahora=getDatahora())

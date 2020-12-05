@@ -4,6 +4,7 @@
   "description": "",
   "main": "projeto/static/script.js",
   "dependencies": {
+    "eslint": "^7.15.0",
     "font-awesome": "^4.7.0"
   },
   "devDependencies": {},

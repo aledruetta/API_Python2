@@ -6,13 +6,12 @@ from projeto.ext.db import db
 
 admin = Admin(name="Dashboard", template_mode="bootstrap3")
 
-views = [
-    UserView(UserAuth, db.session),
-    EstacaoView(Estacao, db.session),
-    SensorView(Sensor, db.session),
-]
-admin.add_views(*views)
-
 
 def init_app(app):
     admin.init_app(app)
+    views = [
+        UserView(UserAuth, db.session),
+        EstacaoView(Estacao, db.session),
+        SensorView(Sensor, db.session),
+    ]
+    admin.add_views(*views)

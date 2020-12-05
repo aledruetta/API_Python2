@@ -6,6 +6,8 @@ from flask_login import current_user, login_required
 class AdminView(ModelView):
     @login_required
     def is_accessible(self):
+        print(current_user.is_authenticated)
+        print(current_user.is_admin)
         if current_user.is_authenticated and current_user.is_admin:
             return True
         return False
@@ -16,6 +18,7 @@ class AdminView(ModelView):
 
 
 class UserView(AdminView):
+    column_list = ("id", "email", "is_admin")
     column_sortable_list = ()
 
 

@@ -1,4 +1,4 @@
-from flask import redirect, url_for, request
+from flask import redirect, request, url_for
 from flask_admin.contrib.sqla import ModelView
 from flask_login import current_user, login_required
 
@@ -16,18 +16,19 @@ class AdminView(ModelView):
 
 
 class UserView(AdminView):
+    column_list = ("id", "email", "is_admin")
     column_sortable_list = ()
 
 
 class EstacaoView(AdminView):
-    column_list = ('id', 'local', 'latitude', 'longitude')
+    column_list = ("id", "local", "latitude", "longitude")
     column_sortable_list = ()
 
 
 class SensorView(AdminView):
-    column_list = ('id', 'tipo', 'descricao', 'params', 'estacao')
+    column_list = ("id", "tipo", "descricao", "params", "estacao")
     column_sortable_list = ()
 
     form_excluded_columns = [
-        'leituras',
+        "leituras",
     ]

@@ -1,102 +1,49 @@
-# API Estação Meteorológica Python
-## Instalação
-https://www.python.org/
-## Documentação
-https://docs.python.org/3/
-## IDE
-https://code.visualstudio.com/docs/languages/python
-## Instalar plugin Python
-https://editorconfig.org/
-## Virtual Environment
-https://docs.python.org/3/library/venv.html?highlight=venv#module-venv
+# Flask REST API
 
-C:\<pasta do projeto>> python -m venv venv
+Instalar VirtualBox e Vagrant
 
-C:\<pasta do projeto>> venv\Scripts\activate
+# Inicializar VM
 
-C:\<pasta do projeto>> deactivate
-## Módulos
-https://pypi.org/project/pip/
+```
+vagrant destroy
+vagrant up
+vagrant ssh
 
-C:\> pip install flask
+ln -s /vagrant_data prototipo
 
-C:\> pip install fontawesome
+cd prototipo
+make install
 
-C:\> pip install flask-bootstrap
+source ~/.venv/bin/activate
 
+make initdb
 
-## Flask
-https://flask.palletsprojects.com/en/1.1.x/
-### LINUX
-> FLASK_APP=app.py
+make shell
+import sensor_sim
+sensor_sim.create_all()
+exit
 
-> FLASK_ENV=development 	 
-### WINDOWS
-> $env:FLASK_APP = ‘app.py’
+make run
+```
 
-> $env:FLASK_ENV = ‘development’
+# Usar VM
 
-## API REST endpoints
-LIST get /api/v1.0/
+```
+vagrant status
+vagrant up
+vagrant ssh
 
-GET get /api/v1.0/id
+source ~/.venv/bin/activate
+cd prototipo
+make run
 
-CREATE post /api/v1.0
+Ctrl+C
+exit
+vagrant halt
+```
 
-UPDATE post /api/v1.0/id
+# Browser
 
-DELETE post /api/v1.0/id/del
-
->>>>>> Atualizar endpoints!!!
-
-## Flask-RESTful
-https://flask-restful.readthedocs.io/en/latest/
-Jinja2 Templates
-
-https://palletsprojects.com/p/jinja/
-
-## SQLAlchemy ORM
-https://flask-sqlalchemy.palletsprojects.com/en/2.x/
-3 barras significam path relativo, 4 path absoluto:
-
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////tmp/test.db'
-### Usar chave/valor para instanciar o modelo:
-admin = User(username='admin', email='admin@example.com')
-Só aceita os verbos GET e POST.
-### Para inicializar o banco de dados:
-Abrir sessão interativa do python
-from app import db
-db.create_all()
-Na documentação oficial tem a informação sobre os modelos de relacionamento. Aqui a gente usou um para muitos.
-
-## Application Factory
-Modularização por extensões
-Agrupamento de views por Blueprints
-
-## Implementação de MVC
-Imports absolutos e relativos
-Circular imports
-
-## API testes
-Postman
-Autenticação
-
-https://pythonhosted.org/Flask-JWT/
-
-https://blog.tecladocode.com/simple-jwt-authentication-with-flask-jwt/
-
-https://learning.postman.com/docs/sending-requests/authorization/#bearer-token
-
-## Criptografia
-https://pythonprogramming.net/password-hashing-flask-tutorial/
-
-## Visualização
-https://seaborn.pydata.org/examples/index.html
-
-https://www.highcharts.com/
-
-https://www.openstreetmap.org/#map=11/-23.5401/-45.2450
-
-https://leafletjs.com/
-
-https://www.mapbox.com/
+```
+localhost:5000
+```

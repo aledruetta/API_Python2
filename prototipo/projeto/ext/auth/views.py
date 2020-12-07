@@ -6,9 +6,8 @@ from wtforms import PasswordField
 from wtforms.fields.html5 import EmailField
 from wtforms.validators import DataRequired, Email, Length
 
+from projeto.ext.auth.models import UserAuth
 from projeto.ext.db import db
-
-from .models import UserAuth
 
 bp = Blueprint("auth", __name__)
 

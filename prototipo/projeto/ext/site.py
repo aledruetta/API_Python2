@@ -1,8 +1,8 @@
 from flask import Blueprint, render_template
 from flask_login import login_required
 
-from .api.models import Estacao
-from .auth.models import UserAuth
+from projeto.ext.api.models import Estacao
+from projeto.ext.auth.models import UserAuth
 
 bp = Blueprint("site", __name__)
 

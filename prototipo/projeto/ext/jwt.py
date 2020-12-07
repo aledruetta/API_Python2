@@ -1,7 +1,7 @@
 from flask_jwt import JWT
 from passlib.hash import sha256_crypt
 
-from .auth.models import UserAuth
+from projeto.ext.auth.models import UserAuth
 
 
 def authenticate(email, password):

@@ -85,24 +85,24 @@ def create_all():
         db.session.commit()
 
 
+def get_datahora():
+    return int(datetime.timestamp(datetime.now()))
+
+
 def post(url, leitura, token):
     response = requests.post(url,
                              json={
                                  "valor": f"{leitura.valor:.2f}",
-                                 "datahora": getDatahora()
+                                 "datahora": get_datahora()
                              },
                              headers={"Authorization": f"jwt {token}"})
     print(response.json())
 
 
-def getDatahora():
-    return int(datetime.timestamp(datetime.now()))
-
-
 def simular():
     auth = {"email": "admin@gmail.com", "password": "12345678"}
-    URL = "http://localhost:5000/token"
-    token = requests.post(URL, json=auth).json()['access_token']
+    url = "http://localhost:5000/token"
+    token = requests.post(url, json=auth).json()['access_token']
 
     sensores = Sensor.query.all()
     valores_iniciais = []
@@ -148,7 +148,7 @@ def simular():
                 url = f"http://localhost:5000/api/{VERSAO}/sensor/{sensor.id}/{param}"
                 inicial = float(valores[param])
                 valor = inicial + random() * choice(LINSPACE)
-                leitura = Leitura(valor=valor, datahora=getDatahora())
+                leitura = Leitura(valor=valor, datahora=get_datahora())
                 post(url, leitura, token)
 
 

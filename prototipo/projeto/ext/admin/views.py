@@ -21,7 +21,8 @@ class UserView(AdminView):
 
 
 class EstacaoView(AdminView):
-    column_list = ("id", "local", "latitude", "longitude")
+    column_list = ("id", "local", "latitude", "longitude", "created_on",
+                   "updated_on")
     column_sortable_list = ()
 
 

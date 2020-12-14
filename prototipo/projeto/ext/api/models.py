@@ -10,6 +10,11 @@ class Estacao(db.Model):
     local = db.Column("local", db.String(255), nullable=False)
     latitude = db.Column("latitude", db.String(255), nullable=False)
     longitude = db.Column("longitude", db.String(255), nullable=False)
+    created_on = db.Column("created_on", db.DateTime, default=datetime.now)
+    updated_on = db.Column("updated_on",
+                           db.DateTime,
+                           default=datetime.now,
+                           onupdate=datetime.now)
 
     def get_sensor(self, sensor_id):
         for sensor in self.sensores:

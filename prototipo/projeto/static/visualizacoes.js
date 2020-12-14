@@ -20,8 +20,8 @@ $(function () {
     const result = await fetch(`${URL_BASE}/estacao`);
 
     if (result.ok) {
-      const data = await result.json();
-      return data.resources;
+      let data = await result.json();
+      return data.resources.sort(function(a, b) {return a.id > b.id});
     }
   }
 
@@ -34,7 +34,7 @@ $(function () {
 
     if (result.ok) {
       const data = await result.json();
-      return data.resources;
+      return data.resources.sort(function(a, b) {return a.id > b.id});
     }
   }
 
@@ -47,7 +47,7 @@ $(function () {
 
     if (result.ok) {
       const data = await result.json();
-      return data.resource.params.split(",");
+      return data.resource.params.split(",").sort();
     }
   }
 

@@ -19,6 +19,10 @@ class UserView(AdminView):
     column_list = ("id", "email", "is_admin")
     column_sortable_list = ()
 
+    can_create = True
+    can_delete = True
+    can_edit = False
+
 
 class EstacaoView(AdminView):
     column_list = ("id", "local", "latitude", "longitude", "created_on",

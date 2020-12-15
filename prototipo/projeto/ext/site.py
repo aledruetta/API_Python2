@@ -1,6 +1,5 @@
 from flask import Blueprint, render_template
 from flask_login import login_required
-
 from projeto.ext.api.models import Estacao
 from projeto.ext.auth.models import UserAuth
 

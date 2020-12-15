@@ -1,5 +1,4 @@
 from flask_restful import Api
-
 from projeto.ext.api.views import (ApiEstacao, ApiEstacaoId,
                                    ApiEstacaoIdSensor, ApiSensorId,
                                    ApiSensorIdParam, ApiSensorIdParamLast)

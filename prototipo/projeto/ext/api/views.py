@@ -2,11 +2,10 @@ from datetime import datetime
 
 from flask_jwt import jwt_required
 from flask_restful import Resource, reqparse
+from projeto.ext.api.models import Estacao, Leitura, Sensor
 from projeto.ext.db import db
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm.exc import UnmappedInstanceError
-
-from projeto.ext.api.models import Estacao, Leitura, Sensor
 
 HTTP_RESPONSE_CREATED = 201
 HTTP_RESPONSE_NOT_FOUND = 404

@@ -1,5 +1,4 @@
 from flask_login import LoginManager
-
 from projeto.ext.auth.models import UserAuth
 from projeto.ext.auth.views import bp
 

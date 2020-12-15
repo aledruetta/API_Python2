@@ -1,7 +1,6 @@
 from datetime import timedelta
 
 from flask import Flask
-
 from projeto.ext import admin, api, auth, db, jwt, site
 
 

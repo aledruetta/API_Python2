@@ -38,9 +38,15 @@ class Sensor(db.Model):
     __tablename__ = "sensor"
 
     id = db.Column("id", db.Integer, primary_key=True)
-    tipo = db.Column("tipo", db.String(255), nullable=False)
-    descricao = db.Column("descricao", db.String(255), nullable=False)
-    params = db.Column("params", db.String(255), nullable=False)
+
+    tipo_id = db.Column("tipo_id",
+                           db.Integer,
+                           db.ForeignKey("sensor_tipo.id"),
+                           nullable=False)
+    tipo = db.relationship("SensorTipo",
+                              backref=db.backref("sensores",
+                                                 cascade="all, delete-orphan",
+                                                 lazy=True))
 
     estacao_id = db.Column("estacao_id",
                            db.Integer,
@@ -54,14 +60,26 @@ class Sensor(db.Model):
     def json(self):
         return {
             "id": self.id,
-            "tipo": self.tipo,
-            "descricao": self.descricao,
-            "params": self.params,
+            "tipo": self.tipo.codigo,
+            "descricao": self.tipo.descricao,
+            "params": self.tipo.params,
             "estacao_id": self.estacao_id,
         }
 
     def __repr__(self):
-        return f"{self.tipo}"
+        return f"{self.tipo.codigo}"
+
+
+class SensorTipo(db.Model):
+    __tablename__ = "sensor_tipo"
+
+    id = db.Column("id", db.Integer, primary_key=True)
+    codigo = db.Column("codigo", db.String(255), nullable=False, unique=True)
+    descricao = db.Column("descricao", db.String(255), nullable=False)
+    params = db.Column("params", db.String(255), nullable=False)
+
+    def __repr__(self):
+        return f"{self.codigo}"
 
 
 class Leitura(db.Model):

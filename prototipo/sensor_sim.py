@@ -4,8 +4,7 @@ from time import sleep
 
 import numpy as np
 import requests
-
-from projeto.ext.api.models import Estacao, Leitura, Sensor
+from projeto.ext.api.models import Estacao, Leitura, Sensor, SensorTipo
 from projeto.ext.db import db
 
 MIN_VAR = -1
@@ -29,54 +28,64 @@ VERSAO = "v1.2"
 
 
 def create_all():
-    estacoes = [
+    estacoes = {
+        "ubatuba":
         Estacao(local="Ubatuba", latitude="-23.43389", longitude="-45.07111"),
+        "caragua":
         Estacao(local="Caraguatatuba",
                 latitude="-23.62028",
                 longitude="-45.41306"),
+        "cunha":
         Estacao(local="Cunha", latitude="-23.07444", longitude="-44.95972")
-    ]
+    }
+
+    tipos = {
+        "dht11":
+        SensorTipo(codigo="DHT11",
+                   descricao="Sensor temperatura e umidade",
+                   params="temp_ambiente,umid_relativa"),
+        "ldr":
+        SensorTipo(codigo="LDR",
+                   descricao="Sensor de luminosidade",
+                   params="luminosidade"),
+        "ds18b20":
+        SensorTipo(codigo="DS18B20",
+                   descricao="Sensor de temperatura digital",
+                   params="temp_agua"),
+        "solo":
+        SensorTipo(codigo="LM393_solo",
+                   descricao="Sensor de umidade do solo",
+                   params="umid_solo"),
+        "chuva":
+        SensorTipo(codigo="LM393_chuva",
+                   descricao="Sensor de chuva",
+                   params="chuva"),
+        "som":
+        SensorTipo(codigo="LM393_som", descricao="Sensor de som",
+                   params="som"),
+        "bmp180":
+        SensorTipo(codigo="BMP180",
+                   descricao="Sensor de altitude e pressão",
+                   params="altitude,pressao"),
+        "dht22":
+        SensorTipo(codigo="DHT22",
+                   descricao="Sensor temperatura e umidade",
+                   params="temp_ambiente,umid_relativa")
+    }
 
     sensores = [
-        Sensor(tipo="DHT11",
-               descricao="Sensor temperatura e umidade",
-               params="temp_ambiente,umid_relativa",
-               estacao_id=1),
-        Sensor(tipo="LDR",
-               descricao="Sensor de luminosidade",
-               params="luminosidade",
-               estacao_id=1),
-        Sensor(tipo="DS18B20",
-               descricao="Sensor de temperatura digital",
-               params="temp_agua",
-               estacao_id=1),
-        Sensor(tipo="LM393_solo",
-               descricao="Sensor de umidade do solo",
-               params="umid_solo",
-               estacao_id=1),
-        Sensor(tipo="LM393_chuva",
-               descricao="Sensor de chuva",
-               params="chuva",
-               estacao_id=1),
-        Sensor(tipo="LM393_som",
-               descricao="Sensor de som",
-               params="som",
-               estacao_id=1),
-        Sensor(tipo="BMP180",
-               descricao="Sensor de altitude e pressão",
-               params="altitude,pressao",
-               estacao_id=1),
-        Sensor(tipo="DHT22",
-               descricao="Sensor temperatura e umidade",
-               params="temp_ambiente,umid_relativa",
-               estacao_id=2),
-        Sensor(tipo="BMP180",
-               descricao="Sensor de altitude e pressão",
-               params="altitude,pressao",
-               estacao_id=3)
+        Sensor(tipo=tipos["dht11"], estacao=estacoes["ubatuba"]),
+        Sensor(tipo=tipos["ldr"], estacao=estacoes["ubatuba"]),
+        Sensor(tipo=tipos["ds18b20"], estacao=estacoes["ubatuba"]),
+        Sensor(tipo=tipos["solo"], estacao=estacoes["ubatuba"]),
+        Sensor(tipo=tipos["chuva"], estacao=estacoes["ubatuba"]),
+        Sensor(tipo=tipos["som"], estacao=estacoes["ubatuba"]),
+        Sensor(tipo=tipos["bmp180"], estacao=estacoes["ubatuba"]),
+        Sensor(tipo=tipos["dht22"], estacao=estacoes["caragua"]),
+        Sensor(tipo=tipos["bmp180"], estacao=estacoes["cunha"]),
     ]
 
-    for estacao in estacoes:
+    for estacao in estacoes.values():
         db.session.add(estacao)
         db.session.commit()
 
@@ -84,10 +93,8 @@ def create_all():
         db.session.add(sensor)
         db.session.commit()
 
-
 def get_datahora():
     return int(datetime.timestamp(datetime.now()))
-
 
 def post(url, leitura, token):
     response = requests.post(url,
@@ -97,7 +104,6 @@ def post(url, leitura, token):
                              },
                              headers={"Authorization": f"jwt {token}"})
     print(response.json())
-
 
 def simular():
     auth = {"email": "admin@gmail.com", "password": "12345678"}
@@ -112,7 +118,7 @@ def simular():
     # Determina os valores iniciais para cada parámetro
     for sensor in sensores:
         valores_sensor = {}
-        for param in sensor.params.split(","):
+        for param in sensor.tipo.params.split(","):
             if param.startswith("temp"):
                 pmin = MIN_TEMP
                 pmax = MAX_TEMP
@@ -143,14 +149,13 @@ def simular():
         sleep(1)
 
         for sensor, valores in zip_sensores:
-            params = sensor.params.split(",")
+            params = sensor.tipo.params.split(",")
             for param in params:
                 url = f"http://localhost:5000/api/{VERSAO}/sensor/{sensor.id}/{param}"
                 inicial = float(valores[param])
                 valor = inicial + random() * choice(LINSPACE)
                 leitura = Leitura(valor=valor, datahora=get_datahora())
                 post(url, leitura, token)
-
 
 if __name__ == "__main__":
     print("""
@@ -161,4 +166,4 @@ if __name__ == "__main__":
         - chame a função com:
             `sensor_sim.create_all()`
             `sensor_sim.simular()`
-    """)
+""")

@@ -23,10 +23,14 @@ DHT dht(DHTPin, DHTTYPE);
 WiFiUDP ntpUDP;
 NTPClient timeClient(ntpUDP, NTP_ADDRESS, NTP_OFFSET, NTP_INTERVAL);
 
-const char *host = "192.168.0.106";
-const int   led  = D7;
+const char *host   = "192.168.0.106";
+const int httpPort = 5000;
+const int   led    = D7;
 
-int estacao  = 1;
+int estacao   = 1;
+String versao = "1.2";
+String token  = "";
+
 int ldrPin   = A0;
 int tmp      = 80;
 int ldrValor = 0;
@@ -110,12 +114,14 @@ void EncontraValor(String str1, String str2, String str3, int inicio, int fim, i
   if (str2 == "Pressao") {
     pos = str1.indexOf("Pressao", 0);
     Serial.println(pos);
-    if (pos > 0)
+    if (pos > 0) {
       str1 = str1.substring(pos);
+      Serial.println(str1);
+    }
     else if (pos == 0) {
       temp = str1.substring(1);
       pos  = temp.indexOf("Pressao", 0);
-      if (pos >= 0) {
+      if (pos > 0) {
         Serial.println(pos);
         str1 = temp.substring(pos);
       }
@@ -140,7 +146,6 @@ void EncontraValor(String str1, String str2, String str3, int inicio, int fim, i
 
 void EnviaDados(float valor, String tipo, int estacao) {
   WiFiClient client;
-  const int httpPort = 5000;
   timeClient.update();
   
   if (!client.connect(host, httpPort)) {
@@ -151,9 +156,53 @@ void EnviaDados(float valor, String tipo, int estacao) {
   String formattedTime    = timeClient.getFormattedTime();
   unsigned long epcohTime = timeClient.getEpochTime();
   
-  data = "{\"valor\": " + String(valor) + ", \"datahora\": " + String(epcohTime) + "}";
+  data  = "{\"valor\": " + String(valor) + ", \"datahora\": " + String(epcohTime) + "}";
+/*  
+  json=
+  {
+    "valor": 304.00, 
+    "datahora": 1607109786
+  },
+  headers=
+  {
+    "Authorization": "jwt eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE2MDcxOTI0NzUsImlhdCI6MTYwNzEwNjA3NSwibmJmIjoxNjA3MTA2MDc1LCJpZGVudGl0eSI6MX0.gpFQ_KaX0DFd3ps8VHK7E5ly5L0doueUSbaYptgQVHI"
+  }
+*/
+  client.println("POST /api/v" + versao + "/sensor/" + String(estacao) + "/" + tipo + " HTTP/1.1");
+  client.print("Host: ");
+  client.println(host);
+  client.println("Accept: */*");
+  client.println("Content-Type: application/json");
+  client.print("Authorization: ");
+  client.println(token);
+  client.print("Content-Length: ");
+  client.println(data.length());
   
-  client.println("POST /api/v1.1/sensor/" + String(estacao) + "/" + tipo + " HTTP/1.1");
+  client.println();
+  client.print(data);
+  
+  Serial.println(token);
+  Serial.println(data);
+
+  delay(20); // Can be changed
+  if (client.connected()) { 
+    client.stop();  // DISCONNECT FROM THE SERVER
+  }
+  delay(20);
+}
+
+String RecebeToken() {
+  WiFiClient client;
+  String line, token2;
+  
+  if (!client.connect(host, httpPort)) {
+    Serial.println("connection failed");
+    return "Erro ao conectar";
+  }
+  
+  data = "{\"email\": \"admin@gmail.com\", \"password\": \"12345678\"}";
+
+  client.println("POST /token HTTP/1.1");
   client.print("Host: ");
   client.println(host);
   client.println("Accept: */*");
@@ -162,13 +211,21 @@ void EnviaDados(float valor, String tipo, int estacao) {
   client.println(data.length());
   client.println();
   client.print(data);
-  Serial.println(data);
 
   delay(20); // Can be changed
-  if (client.connected()) { 
-    client.stop();  // DISCONNECT FROM THE SERVER
+  while (client.connected()) {
+    if (client.available()) {
+      line = client.readStringUntil('\n');
+      if (line.indexOf("HTTP", 0) > 0) {
+        Serial.print("[Response:]");
+        Serial.println(line.substring(0, 15));
+      }
+      if (line.indexOf("access_token", 0) > 0) 
+        token2 = "\"jwt " + line.substring(line.indexOf("access_token", 0)+16);
+    }
   }
   delay(20);
+  return token2;
 }
 
 void setup() {
@@ -187,6 +244,10 @@ void setup() {
   pinMode(DHTPin, INPUT);
 
   dht.begin();
+  
+  token = RecebeToken();
+  Serial.print("Token: ");
+  Serial.println(token);
   
   digitalWrite(led, HIGH);
   delay(100);

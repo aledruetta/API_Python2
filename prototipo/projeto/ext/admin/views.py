@@ -27,12 +27,17 @@ class UserView(AdminView):
 class EstacaoView(AdminView):
     column_list = ("id", "local", "latitude", "longitude", "created_on",
                    "updated_on")
-    column_sortable_list = ()
     form_excluded_columns = ("created_on", "updated_on")
+    column_sortable_list = ()
+
+
+class SensorTipoView(AdminView):
+    # column_list = ("id", "codigo", "descricao", "params")
+    column_sortable_list = ()
 
 
 class SensorView(AdminView):
-    column_list = ("id", "tipo", "descricao", "params", "estacao")
+    # column_list = ("id", "tipo", "estacao")
     column_sortable_list = ()
 
     form_excluded_columns = [

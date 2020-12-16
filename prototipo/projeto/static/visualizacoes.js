@@ -21,7 +21,7 @@ $(function () {
 
     if (result.ok) {
       let data = await result.json();
-      return data.resources.sort(function(a, b) {return a.id > b.id});
+      return data.resources.sort((a, b) => {return a.id > b.id});
     }
   }
 
@@ -34,7 +34,7 @@ $(function () {
 
     if (result.ok) {
       const data = await result.json();
-      return data.resources.sort(function(a, b) {return a.id > b.id});
+      return data.resources.sort((a, b) => {return a.id > b.id});
     }
   }
 
@@ -82,12 +82,12 @@ $(function () {
   function updateChart(serie, sensor_id, param) {
 
     fetch(`${URL_BASE}/sensor/${sensor_id}/${param}/1`)
-    .then(function(response) {
+    .then((response) => {
       let contentType = response.headers.get('content-type');
       if (contentType && contentType.indexOf("application/json") !== -1) {
 
         return response.json()
-        .then(function(json) {
+        .then((json) => {
           // seconds (python) to milliseconds (js)
           let x = json.resources[0].datahora * 1000;
           let y = parseFloat(json.resources[0].valor);
@@ -107,7 +107,7 @@ $(function () {
 
     if (estacoes) {
       $('#local-sel').empty();
-      estacoes.forEach(function(estacao) {
+      estacoes.forEach((estacao) => {
         $('#local-sel')
           .append($('<option></option>')
             .val(estacao.id)
@@ -118,7 +118,7 @@ $(function () {
 
     if (sensores) {
       $('#sensor-sel').empty();
-      sensores.forEach(function(sensor) {
+      sensores.forEach((sensor) => {
         $('#sensor-sel')
         .append($('<option></option>')
           .val(sensor.id)
@@ -129,7 +129,7 @@ $(function () {
 
     if (params) {
       $('#param-sel').empty();
-      params.forEach(function(param) {
+      params.forEach((param) => {
         $('#param-sel')
         .append($('<option></option>')
           .val(param)
@@ -145,7 +145,7 @@ $(function () {
      * Inicializa o objeto Highcharts com os dados assícronos fornecidos
      * por requestData.
      */
-    .then(function(data) {
+    .then((data) => {
 
       let chart = new Highcharts.chart('container', {
         chart: {
@@ -153,7 +153,7 @@ $(function () {
           animation: Highcharts.svg, // don't animate in old IE
           marginRight: 10,
           events: {
-            load: function () {
+            load: function() {
 
               const selected = {
                 estacao_id: data.estacoes[0].id,
@@ -181,7 +181,7 @@ $(function () {
                 selected.sensor_id = this.value;
 
                 requestParams(selected.estacao_id, selected.sensor_id)
-                  .then(function(params_new) {
+                  .then((params_new) => {
 
                     data.params = params_new;
                     selected.param = data.params[0];
@@ -198,7 +198,7 @@ $(function () {
                 selected.estacao_id = this.value;
 
                 requestSensores(selected.estacao_id)
-                  .then(function(sensores_new) {
+                  .then((sensores_new) => {
 
                     data.sensores = sensores_new;
                     selected.sensor_id = data.sensores[0].id;
@@ -214,7 +214,7 @@ $(function () {
               });
 
               // set up the updating of the chart each second
-              setInterval(function () {
+              setInterval(() => {
                 if (serie && selected.sensor_id && selected.param) {
                   updateChart(serie, selected.sensor_id, selected.param);
                 }
@@ -236,7 +236,7 @@ $(function () {
           announceNewData: {
             enabled: true,
             minAnnounceInterval: 15000,
-            announcementFormatter: function (allSeries, newSeries, newPoint) {
+            announcementFormatter: (allSeries, newSeries, newPoint) => {
               if (newPoint) {
                   return 'New point added. Value: ' + newPoint.y;
               }

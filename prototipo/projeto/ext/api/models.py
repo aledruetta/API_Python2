@@ -16,7 +16,7 @@ class Estacao(db.Model):
                            default=datetime.now,
                            onupdate=datetime.now)
 
-    def get_sensor(self, sensor_id):
+    def get_sensor(self, sensor_id: int):
         for sensor in self.sensores:
             if sensor.id == sensor_id:
                 return sensor

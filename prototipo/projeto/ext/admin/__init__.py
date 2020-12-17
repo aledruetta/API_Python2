@@ -1,6 +1,5 @@
 from flask_admin import Admin
-from projeto.ext.admin.views import (EstacaoView, SensorTipoView, SensorView,
-                                     UserView)
+from projeto.ext.admin.views import EstacaoView, SensorView, SensorTipoView, UserView
 from projeto.ext.api.models import Estacao, Sensor, SensorTipo
 from projeto.ext.auth.models import UserAuth
 from projeto.ext.db import db

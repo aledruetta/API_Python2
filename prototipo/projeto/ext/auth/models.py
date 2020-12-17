@@ -1,5 +1,4 @@
 from flask_login import UserMixin
-
 from projeto.ext.db import db
 
 

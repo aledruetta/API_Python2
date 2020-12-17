@@ -1,5 +1,7 @@
 # Flask REST API
 
+Instalar VirtualBox e Vagrant
+
 # Inicializar VM
 
 ```
@@ -9,17 +11,17 @@ vagrant ssh
 
 ln -s /vagrant_data prototipo
 
-  cd prototipo
-  make install
+cd prototipo
+make install
 
-  source ~/.venv/bin/activate
+source ~/.venv/bin/activate
 
-  make initdb
+make initdb
 
-  make shell
-  import sensor_sim
-  sensor_sim.create_all()
-  exit
+make shell
+import sensor_sim
+sensor_sim.create_all()
+exit
 
 make run
 ```

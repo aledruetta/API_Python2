@@ -1,5 +1,7 @@
+# from pprint import pprint
 from datetime import datetime
 
+# from flask import request
 from flask_jwt import jwt_required
 from flask_restful import Resource, reqparse
 from projeto.ext.api.models import Estacao, Leitura, Sensor
@@ -198,6 +200,7 @@ class ApiSensorIdParam(Resource):
 
     @jwt_required()
     def post(self, sensor_id, param):
+        # pprint(request.__dict__)
         parser = reqparse.RequestParser()
         parser.add_argument("valor",
                             type=str,

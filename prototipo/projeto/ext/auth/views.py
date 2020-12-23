@@ -2,12 +2,11 @@ from flask import Blueprint, flash, redirect, render_template, request, url_for
 from flask_login import login_required, login_user, logout_user
 from flask_wtf import FlaskForm
 from passlib.hash import sha256_crypt
+from projeto.ext.auth.models import UserAuth
+from projeto.ext.db import db
 from wtforms import PasswordField
 from wtforms.fields.html5 import EmailField
 from wtforms.validators import DataRequired, Email, Length
-
-from projeto.ext.auth.models import UserAuth
-from projeto.ext.db import db
 
 bp = Blueprint("auth", __name__)
 

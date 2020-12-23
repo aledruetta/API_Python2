@@ -1,12 +1,13 @@
+# from pprint import pprint
 from datetime import datetime
 
+# from flask import request
 from flask_jwt import jwt_required
 from flask_restful import Resource, reqparse
+from projeto.ext.api.models import Estacao, Leitura, Sensor
 from projeto.ext.db import db
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm.exc import UnmappedInstanceError
-
-from projeto.ext.api.models import Estacao, Leitura, Sensor
 
 HTTP_RESPONSE_CREATED = 201
 HTTP_RESPONSE_NOT_FOUND = 404
@@ -199,6 +200,7 @@ class ApiSensorIdParam(Resource):
 
     @jwt_required()
     def post(self, sensor_id, param):
+        # pprint(request.__dict__)
         parser = reqparse.RequestParser()
         parser.add_argument("valor",
                             type=str,

@@ -8,7 +8,7 @@ def read(filename):
 setup(
     name="FlaskAPI",
     version="0.1.0",
-    description="Online Chess Game",
+    description="Flask REST API",
     packages=find_packages(),
     include_package_data=True,
     install_requires=read("requirements.txt"),

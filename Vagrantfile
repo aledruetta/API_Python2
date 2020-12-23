@@ -13,12 +13,12 @@ Vagrant.configure("2") do |config|
   # config.vm.network "private_network", ip: "192.168.33.10"
   config.vm.network "public_network"
 
-  config.vm.synced_folder "./", "/vagrant_data"
+  config.vm.synced_folder "./prototipo", "/vagrant_data"
 
   config.vm.provider "virtualbox" do |vb|
     vb.name = "focal64_flaskAPI"
     vb.gui = false
-    vb.memory = "2048"
+    vb.memory = "1024"
   end
 
   config.vm.provision :shell, :path => "Vagrant-setup/bootstrap.sh"

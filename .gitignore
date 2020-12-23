@@ -10,6 +10,7 @@ node_modules/
 *.db*
 *.log
 .eslintrc.*
+.env
 
 requirements-dev.txt
 tilix.json
